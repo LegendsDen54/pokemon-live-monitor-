@@ -10,18 +10,16 @@
 
 <style>
 body{
-  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:#f3f4f6;
   margin:0;
   color:#111827;
 }
-
 main{
   max-width:680px;
   margin:auto;
   padding:18px 14px 100px;
 }
-
 .card{
   background:white;
   border-radius:18px;
@@ -29,31 +27,60 @@ main{
   margin:12px 0;
   box-shadow:0 2px 12px #00000010;
 }
-
-h1{
-  margin:0 0 5px;
-  font-size:25px;
+h1{margin:0 0 5px;font-size:25px}
+h2{font-size:19px;margin:22px 0 8px}
+.muted{color:#6b7280;font-size:13px}
+.live{color:#087f3f;font-weight:700}
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
 }
-
-.muted{
-  color:#6b7280;
-  font-size:13px;
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:14px;
 }
-
-.live{
-  color:#087f3f;
-  font-weight:700;
+.stat{
+  background:#f3f4f6;
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
 }
-
-.drop{
-  border:2px solid #10b981;
+.stat b{
+  display:block;
+  font-size:20px;
 }
-
-.priority{
-  background:#fff7ed;
+.product{
+  border:2px solid #e5e7eb;
+}
+.product.in-stock{
+  border-color:#10b981;
+}
+.product.priority{
   border-color:#f97316;
 }
-
+.pill{
+  font-size:11px;
+  padding:5px 8px;
+  border-radius:999px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.pill-live{
+  background:#dcfce7;
+  color:#166534;
+}
+.pill-out{
+  background:#fee2e2;
+  color:#991b1b;
+}
+.pill-scan{
+  background:#e5e7eb;
+  color:#374151;
+}
 button,.buy{
   border:0;
   border-radius:12px;
@@ -64,41 +91,14 @@ button,.buy{
   text-decoration:none;
   cursor:pointer;
 }
-
 .buy{
   background:#111827;
   color:white;
 }
-
 .secondary{
   background:#e5e7eb;
   color:#111827;
 }
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  align-items:center;
-}
-
-.pill{
-  font-size:12px;
-  padding:5px 8px;
-  border-radius:999px;
-  background:#dcfce7;
-  color:#166534;
-}
-
-.alert{
-  font-size:14px;
-  background:#111827;
-  color:white;
-  padding:13px;
-  border-radius:12px;
-  margin:10px 0;
-}
-
 .product-image{
   width:100%;
   max-height:240px;
@@ -106,11 +106,21 @@ button,.buy{
   border-radius:12px;
   margin:12px 0;
 }
+.priority-alert{
+  font-size:13px;
+  background:#fff7ed;
+  border:1px solid #fdba74;
+  padding:10px;
+  border-radius:10px;
+  margin:10px 0;
+}
+.scan-time{
+  margin-top:10px;
+}
 </style>
 </head>
 
 <body>
-
 <main>
 
 <div class="card">
@@ -121,11 +131,28 @@ button,.buy{
   </div>
 
   <p class="live" id="monitorStatus">
-    ● CONNECTING TO LIVE MONITOR...
+    ● CONNECTING...
   </p>
 
   <div class="muted" id="lastScan">
     Waiting for backend...
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <b id="totalCount">0</b>
+      <span class="muted">Monitored</span>
+    </div>
+
+    <div class="stat">
+      <b id="liveCount">0</b>
+      <span class="muted">In Stock</span>
+    </div>
+
+    <div class="stat">
+      <b id="directCount">0</b>
+      <span class="muted">Direct</span>
+    </div>
   </div>
 
   <br>
@@ -135,11 +162,11 @@ button,.buy{
   </button>
 </div>
 
-<div id="banner"></div>
+<h2>Walmart Scanner</h2>
 
 <div id="feed">
   <div class="card">
-    Loading live products...
+    Loading monitored products...
   </div>
 </div>
 
@@ -148,22 +175,14 @@ button,.buy{
 <script>
 
 const API_URL =
-  "https://pokemon-live-backend.onrender.com/api/products";
+  "https://pokemon-live-backend.onrender.com/api/status";
 
-let drops = [];
-
-
-/* =========================
-   LOAD LIVE BACKEND DATA
-========================= */
+let products = [];
 
 async function loadLiveProducts(){
 
   const status =
     document.getElementById("monitorStatus");
-
-  const lastScan =
-    document.getElementById("lastScan");
 
   try{
 
@@ -171,98 +190,61 @@ async function loadLiveProducts(){
       await fetch(API_URL,{cache:"no-store"});
 
     if(!response.ok){
-      throw new Error(
-        `Backend returned ${response.status}`
-      );
+      throw new Error(`Backend returned ${response.status}`);
     }
 
     const data =
       await response.json();
 
-    drops =
-      (data.items || []).map(item => ({
-
-        name:item.name || "Unknown Pokémon Product",
-
-        retailer:
-          item.retailer === "walmart"
-            ? "Walmart"
-            : item.retailer === "target"
-            ? "Target"
-            : item.retailer,
-
-        price:item.price,
-
-        msrp:item.msrp,
-
-        seller:item.seller,
-
-        status:
-          item.inStock
-            ? "IN STOCK"
-            : "OUT OF STOCK",
-
-        priority:
-          item.set === "30th Celebration",
-
-        url:item.url,
-
-        image:item.image,
-
-        checkedAt:item.checkedAt
-
-      }));
-
+    products = data.items || [];
 
     status.textContent =
       "● LIVE MONITOR CONNECTED";
 
-
     if(data.lastRun){
 
-      const date =
-        new Date(data.lastRun);
-
-      lastScan.textContent =
+      document.getElementById("lastScan").textContent =
         "Last backend scan: " +
-        date.toLocaleString();
+        new Date(data.lastRun).toLocaleString();
 
     }else{
 
-      lastScan.textContent =
-        "Backend connected • waiting for first scan";
+      document.getElementById("lastScan").textContent =
+        "Backend connected • waiting for scan";
 
     }
 
-
+    updateStats();
     render();
 
   }catch(error){
 
-    console.error(
-      "Live monitor error:",
-      error
-    );
+    console.error(error);
 
     status.textContent =
       "● BACKEND CONNECTION ERROR";
 
     document.getElementById("feed").innerHTML =
       `<div class="card">
-        <b>Unable to load live monitor data.</b>
+        <b>Unable to load scanner data.</b>
         <p class="muted">
-          The dashboard will try again automatically.
+          The dashboard will retry automatically.
         </p>
       </div>`;
-
   }
-
 }
 
+function updateStats(){
 
-/* =========================
-   RENDER PRODUCTS
-========================= */
+  document.getElementById("totalCount").textContent =
+    products.length;
+
+  document.getElementById("liveCount").textContent =
+    products.filter(x => x.inStock).length;
+
+  document.getElementById("directCount").textContent =
+    products.filter(x => x.directSeller).length;
+}
 
 function render(){
 
@@ -271,44 +253,46 @@ function render(){
 
   feed.innerHTML = "";
 
-
-  if(!drops.length){
+  if(!products.length){
 
     feed.innerHTML =
       `<div class="card">
-
-        <b>🔎 Walmart Monitor Active</b>
-
+        <b>No scanner results yet.</b>
         <p class="muted">
-          No qualifying Walmart-direct Pokémon
-          drops detected right now.
+          Waiting for the backend's first completed scan.
         </p>
-
-        <p class="muted">
-          Third-party marketplace sellers are ignored.
-        </p>
-
       </div>`;
 
     return;
   }
 
+  products.forEach(x => {
 
-  drops.forEach(x => {
+    let statusText = "OUT OF STOCK";
+    let pillClass = "pill-out";
 
-    const priceText =
+    if(x.inStock && x.directSeller){
+      statusText = "IN STOCK";
+      pillClass = "pill-live";
+    }
+    else if(
+      x.error === "No Walmart-sold result found"
+    ){
+      statusText = "NO DIRECT MATCH";
+      pillClass = "pill-scan";
+    }
+
+    const price =
       x.price != null
         ? `$${Number(x.price).toFixed(2)}`
         : "Price unavailable";
 
-
-    const msrpText =
+    const msrp =
       x.msrp != null
         ? `MSRP $${Number(x.msrp).toFixed(2)}`
         : "MSRP pending";
 
-
-    const imageHtml =
+    const image =
       x.image
         ? `<img
              class="product-image"
@@ -317,9 +301,8 @@ function render(){
            `
         : "";
 
-
-    const buyButton =
-      x.url
+    const buy =
+      x.url && x.directSeller
         ? `<a
              class="buy"
              href="${x.url}"
@@ -329,131 +312,100 @@ function render(){
            </a>`
         : "";
 
+    const checked =
+      x.checkedAt
+        ? new Date(x.checkedAt).toLocaleString()
+        : "Not scanned yet";
 
-    feed.innerHTML +=
-      `<div class="card drop ${x.priority ? "priority" : ""}">
+    const priority =
+      x.set === "30th Celebration";
+
+    feed.innerHTML += `
+      <div class="card product
+        ${x.inStock && x.directSeller ? "in-stock" : ""}
+        ${priority ? "priority" : ""}">
 
         <div class="row">
 
           <b>${x.name}</b>
 
-          <span class="pill">
-            ${x.status}
+          <span class="pill ${pillClass}">
+            ${statusText}
           </span>
 
         </div>
 
-
-        ${imageHtml}
-
-
-        <p>
-          ${x.retailer}
-          • Seller:
-          ${x.seller || "Unknown"}
+        <p class="muted">
+          ${x.set || "Pokémon TCG"} • Walmart
         </p>
 
+        ${image}
 
         <p>
-
-          <b>${priceText}</b>
-
-          <span class="muted">
-            • ${msrpText}
-          </span>
-
+          <b>${price}</b>
+          <span class="muted"> • ${msrp}</span>
         </p>
 
+        <p class="muted">
+          Seller:
+          ${x.seller || "No Walmart-direct listing detected"}
+        </p>
 
-        ${x.priority
-          ? `<div class="alert">
-               🚨 30TH ANNIVERSARY PRIORITY
+        ${priority
+          ? `<div class="priority-alert">
+               🚨 30TH ANNIVERSARY PRIORITY MONITOR
              </div>`
           : ""
         }
 
+        ${buy}
 
-        ${buyButton}
+        <div class="muted scan-time">
+          Last checked: ${checked}
+        </div>
 
-      </div>`;
-
+      </div>
+    `;
   });
-
 }
-
-
-/* =========================
-   NOTIFICATIONS
-========================= */
 
 async function enableAlerts(){
 
   if(!("Notification" in window)){
-
-    alert(
-      "This browser does not support notifications."
-    );
-
+    alert("Notifications are not available in this browser.");
     return;
-
   }
-
 
   const permission =
     await Notification.requestPermission();
-
 
   if(permission === "granted"){
 
     new Notification(
       "Pokémon Drop Monitor",
       {
-        body:
-          "Alerts enabled for this device."
+        body:"iPhone monitor notifications enabled."
       }
     );
 
   }else{
 
-    alert(
-      "Notification permission was not granted."
-    );
+    alert("Notification permission was not granted.");
 
   }
-
 }
-
-
-/* =========================
-   SERVICE WORKER
-========================= */
 
 if("serviceWorker" in navigator){
-
   navigator.serviceWorker.register("sw.js");
-
 }
-
-
-/* =========================
-   START MONITOR
-========================= */
 
 loadLiveProducts();
 
 /*
- Refresh dashboard data every 30 seconds.
-
- IMPORTANT:
- This reads our backend cache.
- It does NOT intentionally trigger
- a new Walmart search every 30 seconds.
+This refreshes cached scanner STATUS every 30 seconds.
+It does NOT request a new Walmart inventory scan.
 */
-
-setInterval(
-  loadLiveProducts,
-  30000
-);
+setInterval(loadLiveProducts,30000);
 
 </script>
 
