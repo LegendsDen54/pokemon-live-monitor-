@@ -3,100 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#02050b">
-<title>Pokémon Drop Monitor</title>
+<meta name="theme-color" content="#020713">
+<title>Pokémon Restock Monitor</title>
 
 <style>
 *{box-sizing:border-box}
 
 :root{
-  --blue:#22a9ff;
-  --cyan:#6edcff;
-  --green:#42f59b;
-  --gold:#ffd447;
-  --orange:#ff9e3d;
-  --red:#ff5668;
-  --text:#f5f9ff;
-  --muted:#91a3bb;
+  --blue:#20aaff;
+  --green:#43f39a;
+  --gold:#ffd84c;
+  --orange:#ff9d3d;
+  --red:#ff5969;
+  --text:#f7fbff;
+  --muted:#8da4bf;
+  --glass:rgba(3,12,27,.82);
 }
 
 html,body{
   margin:0;
   min-height:100%;
-  background:#02050b;
+  background:#020713;
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
 body{
   min-height:100vh;
+  background-color:#020713;
+}
+
+/* REAL BACKGROUND */
+.wallpaper{
+  position:fixed;
+  inset:0;
+  z-index:0;
+
   background-image:
     linear-gradient(
       180deg,
-      rgba(1,4,10,.08) 0%,
-      rgba(1,4,10,.28) 35%,
-      rgba(1,4,10,.78) 72%,
-      #02050b 100%
+      rgba(0,3,10,.05) 0%,
+      rgba(0,3,10,.10) 38%,
+      rgba(0,3,10,.42) 65%,
+      rgba(0,3,10,.92) 100%
     ),
-    url("./mega_charizard_x_drop_monitor.png");
+    url("./restock_background.png");
 
-  background-size:cover;
-  background-position:center top;
   background-repeat:no-repeat;
-  background-attachment:fixed;
+  background-position:center top;
+  background-size:cover;
 }
 
-body:after{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(
-      circle at 15% 35%,
-      rgba(30,156,255,.12),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 85% 35%,
-      rgba(255,83,35,.10),
-      transparent 30%
-    );
+/* Makes portrait artwork fit correctly on phones */
+@media (orientation:portrait){
+  .wallpaper{
+    background-size:100% auto;
+    background-position:center top;
+  }
+}
+
+/* Landscape gets a full-screen crop */
+@media (orientation:landscape){
+  .wallpaper{
+    background-size:cover;
+    background-position:center 35%;
+  }
 }
 
 .app{
-  width:min(1180px,100%);
-  margin:auto;
-  padding:18px 13px 70px;
   position:relative;
-  z-index:1;
+  z-index:2;
+
+  width:min(1100px,100%);
+  margin:0 auto;
+
+  padding:
+    max(12px,env(safe-area-inset-top))
+    12px
+    max(50px,env(safe-area-inset-bottom));
 }
 
-.top{
-  min-height:360px;
+/* SPACE FOR THE ART */
+.heroSpace{
+  min-height:64vh;
+
   display:flex;
   flex-direction:column;
   justify-content:flex-end;
-  padding-bottom:16px;
+  align-items:center;
+
+  padding-bottom:14px;
 }
 
-.liveRow{
+.controls{
+  width:100%;
   display:flex;
   justify-content:center;
   flex-wrap:wrap;
-  gap:9px;
+  gap:8px;
 }
 
 .live,
-.alertButton{
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
+.alertBtn{
+  min-height:40px;
 
   padding:10px 14px;
+
   border-radius:999px;
+
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+
   font-size:10px;
   font-weight:950;
-  letter-spacing:.6px;
+  letter-spacing:.5px;
 }
 
 .live{
@@ -106,24 +126,23 @@ body:after{
 
   color:var(--green);
 
-  background:rgba(5,22,24,.72);
+  background:rgba(0,20,25,.75);
 
-  border:
-    1px solid rgba(66,245,155,.35);
+  border:1px solid rgba(67,243,154,.42);
 
   box-shadow:
-    0 0 25px rgba(66,245,155,.12);
+    0 0 25px rgba(67,243,154,.12);
 }
 
 .dot{
   width:8px;
   height:8px;
+
   border-radius:50%;
 
   background:currentColor;
 
-  box-shadow:
-    0 0 12px currentColor;
+  box-shadow:0 0 12px currentColor;
 
   animation:pulse 1.5s infinite;
 }
@@ -135,44 +154,49 @@ body:after{
   }
 }
 
-.alertButton{
+.alertBtn{
+  appearance:none;
+
   cursor:pointer;
 
-  color:#bde6ff;
+  color:#c3e8ff;
 
-  background:rgba(5,25,47,.72);
+  background:rgba(4,25,48,.78);
 
-  border:
-    1px solid rgba(34,169,255,.35);
+  border:1px solid rgba(32,170,255,.4);
+
+  box-shadow:
+    0 0 22px rgba(32,170,255,.1);
 }
 
+/* COUNTERS */
 .stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:8px;
 
-  margin:0 0 18px;
+  gap:7px;
+
+  margin-bottom:10px;
 }
 
 .stat{
   text-align:center;
 
-  padding:14px 5px;
+  padding:13px 5px;
 
-  border-radius:16px;
+  border-radius:15px;
 
   background:
     linear-gradient(
       145deg,
-      rgba(9,22,43,.88),
-      rgba(3,8,17,.91)
+      rgba(6,22,45,.88),
+      rgba(2,9,20,.91)
     );
 
-  border:
-    1px solid rgba(73,166,240,.23);
+  border:1px solid rgba(45,171,255,.28);
 
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
+  backdrop-filter:blur(17px);
+  -webkit-backdrop-filter:blur(17px);
 
   box-shadow:
     0 12px 35px rgba(0,0,0,.35);
@@ -181,10 +205,12 @@ body:after{
 .stat strong{
   display:block;
 
-  font-size:25px;
+  font-size:23px;
+
+  color:#fff;
 
   text-shadow:
-    0 0 16px rgba(34,169,255,.4);
+    0 0 18px rgba(32,170,255,.4);
 }
 
 .stat span{
@@ -192,72 +218,72 @@ body:after{
 
   margin-top:5px;
 
-  color:#8095ae;
+  color:#8ba2bc;
 
-  font-size:9px;
+  font-size:8px;
 
-  font-weight:900;
-
-  text-transform:uppercase;
+  font-weight:950;
 
   letter-spacing:.7px;
+
+  text-transform:uppercase;
 }
 
+/* MAIN LIVE PANEL */
 .monitor{
   overflow:hidden;
 
-  border-radius:22px;
-
-  border:
-    1px solid rgba(60,162,242,.28);
+  border-radius:20px;
 
   background:
     linear-gradient(
       145deg,
-      rgba(7,17,35,.91),
-      rgba(3,8,17,.94)
+      rgba(5,18,38,.91),
+      rgba(2,8,18,.94)
     );
 
-  backdrop-filter:blur(17px);
-  -webkit-backdrop-filter:blur(17px);
+  border:
+    1px solid rgba(45,171,255,.35);
+
+  backdrop-filter:blur(19px);
+  -webkit-backdrop-filter:blur(19px);
 
   box-shadow:
-    0 25px 60px rgba(0,0,0,.45);
+    0 20px 60px rgba(0,0,0,.48),
+    0 0 30px rgba(32,170,255,.06);
 }
 
-.monitorHeader{
-  padding:16px;
-
+.monitorHead{
   display:flex;
 
-  justify-content:space-between;
-
   align-items:flex-end;
+  justify-content:space-between;
 
   gap:12px;
 
-  border-bottom:
-    1px solid rgba(255,255,255,.06);
+  padding:15px;
 }
 
-.label{
+.smallTitle{
   color:var(--blue);
 
-  font-size:9px;
+  font-size:8px;
 
-  font-weight:950;
+  font-weight:1000;
 
-  letter-spacing:1.5px;
+  letter-spacing:1.4px;
 }
 
-.monitorHeader h2{
+.monitorHead h2{
   margin:4px 0 0;
 
-  font-size:18px;
+  font-size:17px;
 }
 
 .lastScan{
-  color:#7489a4;
+  max-width:130px;
+
+  color:#7990aa;
 
   font-size:9px;
 
@@ -269,7 +295,7 @@ body:after{
 
   overflow:hidden;
 
-  background:rgba(255,255,255,.03);
+  background:rgba(255,255,255,.04);
 }
 
 .scanLine:after{
@@ -277,91 +303,90 @@ body:after{
 
   display:block;
 
-  height:100%;
-
   width:30%;
+  height:100%;
 
   background:
     linear-gradient(
       90deg,
       transparent,
-      #36bdff,
+      #35bdff,
       transparent
     );
 
   box-shadow:
-    0 0 15px #36bdff;
+    0 0 15px #35bdff;
 
   animation:scan 2s linear infinite;
 }
 
 @keyframes scan{
-  from{transform:translateX(-120%)}
-  to{transform:translateX(440%)}
+  from{
+    transform:translateX(-120%);
+  }
+
+  to{
+    transform:translateX(440%);
+  }
 }
 
+/* PRODUCTS */
 .grid{
   display:grid;
 
   grid-template-columns:
     repeat(auto-fit,minmax(270px,1fr));
 
-  gap:11px;
+  gap:10px;
 
-  padding:12px;
+  padding:11px;
 }
 
 .card{
-  padding:13px;
+  padding:12px;
 
-  border-radius:17px;
+  border-radius:16px;
 
   background:
     linear-gradient(
       145deg,
-      rgba(14,29,54,.94),
-      rgba(5,11,23,.96)
+      rgba(11,29,55,.95),
+      rgba(4,11,23,.96)
     );
 
   border:
-    1px solid rgba(75,158,226,.18);
+    1px solid rgba(64,164,234,.20);
 }
 
 .stockCard{
   border-color:
-    rgba(66,245,155,.4);
-
-  box-shadow:
-    inset 0 0 30px rgba(66,245,155,.03),
-    0 0 22px rgba(66,245,155,.06);
+    rgba(67,243,154,.45);
 }
 
 .marketCard{
   border-color:
-    rgba(255,158,61,.28);
+    rgba(255,157,61,.34);
 }
 
 .cardTop{
   display:flex;
-  gap:12px;
+  gap:11px;
 }
 
 .imageBox{
-  width:94px;
-  height:105px;
+  width:90px;
+  height:102px;
 
   flex:none;
 
-  display:grid;
-
-  place-items:center;
-
   overflow:hidden;
 
-  border-radius:13px;
+  display:grid;
+  place-items:center;
 
-  background:
-    rgba(255,255,255,.05);
+  border-radius:12px;
+
+  background:rgba(255,255,255,.05);
 
   border:
     1px solid rgba(255,255,255,.08);
@@ -379,8 +404,7 @@ body:after{
 }
 
 .placeholder{
-  font-size:31px;
-  opacity:.6;
+  font-size:30px;
 }
 
 .info{
@@ -389,7 +413,7 @@ body:after{
 }
 
 .set{
-  color:#57bfff;
+  color:#52bdff;
 
   font-size:8px;
 
@@ -405,17 +429,17 @@ body:after{
 
   font-size:13px;
 
-  line-height:1.3;
-
   font-weight:850;
+
+  line-height:1.3;
 }
 
 .price{
-  margin-top:8px;
+  margin-top:7px;
 
   color:var(--gold);
 
-  font-size:22px;
+  font-size:21px;
 
   font-weight:1000;
 }
@@ -423,7 +447,7 @@ body:after{
 .badge{
   display:inline-flex;
 
-  margin-top:9px;
+  margin-top:8px;
 
   padding:6px 8px;
 
@@ -433,58 +457,42 @@ body:after{
 
   font-weight:1000;
 
-  letter-spacing:.5px;
+  letter-spacing:.4px;
 }
 
 .green{
-  color:#59f5a8;
-
-  background:
-    rgba(66,245,155,.10);
-
-  border:
-    1px solid rgba(66,245,155,.3);
+  color:#5bf5aa;
+  background:rgba(67,243,154,.10);
+  border:1px solid rgba(67,243,154,.3);
 }
 
 .orange{
-  color:#ffc16e;
-
-  background:
-    rgba(255,158,61,.10);
-
-  border:
-    1px solid rgba(255,158,61,.3);
+  color:#ffc16f;
+  background:rgba(255,157,61,.10);
+  border:1px solid rgba(255,157,61,.3);
 }
 
 .red{
-  color:#ff7a88;
-
-  background:
-    rgba(255,86,104,.10);
-
-  border:
-    1px solid rgba(255,86,104,.25);
+  color:#ff7b89;
+  background:rgba(255,89,105,.10);
+  border:1px solid rgba(255,89,105,.25);
 }
 
 .gray{
-  color:#a6b5c8;
-
-  background:
-    rgba(166,181,200,.08);
-
-  border:
-    1px solid rgba(166,181,200,.18);
+  color:#a7b6c9;
+  background:rgba(167,182,201,.08);
+  border:1px solid rgba(167,182,201,.18);
 }
 
 .meta{
-  margin-top:10px;
+  margin-top:9px;
 
-  padding-top:9px;
+  padding-top:8px;
 
   border-top:
     1px solid rgba(255,255,255,.06);
 
-  color:#8092aa;
+  color:#8095ae;
 
   font-size:9px;
 
@@ -492,29 +500,29 @@ body:after{
 }
 
 .warning{
-  margin-top:9px;
+  margin-top:8px;
 
-  padding:9px;
+  padding:8px;
 
-  border-radius:10px;
+  border-radius:9px;
 
-  color:#ffc271;
+  color:#ffc372;
 
   background:
-    rgba(255,158,61,.07);
+    rgba(255,157,61,.07);
 
   border:
-    1px solid rgba(255,158,61,.13);
+    1px solid rgba(255,157,61,.14);
 
   font-size:9px;
 
-  line-height:1.45;
+  line-height:1.4;
 }
 
 .buy{
   display:block;
 
-  margin-top:10px;
+  margin-top:9px;
 
   padding:11px;
 
@@ -522,52 +530,51 @@ body:after{
 
   text-decoration:none;
 
-  border-radius:11px;
+  border-radius:10px;
 
-  color:#00130a;
+  color:#00150a;
 
   background:
     linear-gradient(
       90deg,
-      #42e992,
-      #80ffb9
+      #42ea94,
+      #80ffba
     );
 
   font-size:10px;
 
   font-weight:1000;
 
-  letter-spacing:.4px;
-
   box-shadow:
-    0 0 20px rgba(66,245,155,.15);
+    0 0 20px rgba(67,243,154,.15);
 }
 
+/* EMPTY SCANNER */
 .empty{
   grid-column:1/-1;
 
-  padding:44px 20px;
+  padding:40px 20px;
 
   text-align:center;
 
-  color:#7d91aa;
+  color:#8197b0;
 }
 
 .radar{
-  width:58px;
-  height:58px;
+  width:55px;
+  height:55px;
 
-  margin:0 auto 14px;
+  margin:0 auto 13px;
 
   position:relative;
 
   border-radius:50%;
 
   border:
-    1px solid rgba(34,169,255,.45);
+    1px solid rgba(32,170,255,.45);
 
   box-shadow:
-    0 0 25px rgba(34,169,255,.14);
+    0 0 25px rgba(32,170,255,.14);
 }
 
 .radar:before{
@@ -580,7 +587,7 @@ body:after{
   border-radius:50%;
 
   border:
-    1px solid rgba(34,169,255,.25);
+    1px solid rgba(32,170,255,.25);
 }
 
 .radar:after{
@@ -588,14 +595,14 @@ body:after{
 
   position:absolute;
 
-  inset:23px;
+  inset:22px;
 
   border-radius:50%;
 
-  background:#39baff;
+  background:#38baff;
 
   box-shadow:
-    0 0 14px #39baff;
+    0 0 13px #38baff;
 }
 
 .empty strong{
@@ -603,51 +610,53 @@ body:after{
 
   margin-bottom:6px;
 
-  color:#bdd0e5;
+  color:#bfd2e6;
 }
 
 .footer{
-  padding:22px 10px;
+  padding:19px 8px;
 
   text-align:center;
 
-  color:#52657c;
+  color:#536a84;
 
   font-size:8px;
 
   letter-spacing:.7px;
 }
 
-@media(max-width:600px){
+/* PHONE PORTRAIT */
+@media(
+  orientation:portrait
+){
 
-  body{
-    background-size:auto 620px;
-    background-position:center top;
-    background-attachment:scroll;
+  .heroSpace{
+    min-height:63vh;
   }
+}
+
+/* LANDSCAPE */
+@media(
+  orientation:landscape
+){
 
   .app{
-    padding:
-      max(10px,env(safe-area-inset-top))
-      10px
-      50px;
+    width:min(1200px,96%);
   }
 
-  .top{
-    min-height:390px;
+  .heroSpace{
+    min-height:74vh;
   }
 
   .stats{
-    gap:6px;
+    width:min(720px,100%);
+    margin-left:auto;
+    margin-right:auto;
   }
 
-  .stat strong{
-    font-size:22px;
-  }
-
-  .imageBox{
-    width:88px;
-    height:99px;
+  .monitor{
+    width:min(1000px,100%);
+    margin:auto;
   }
 }
 </style>
@@ -655,19 +664,24 @@ body:after{
 
 <body>
 
+<div class="wallpaper"></div>
+
 <div class="app">
 
-  <section class="top">
+  <section class="heroSpace">
 
-    <div class="liveRow">
+    <div class="controls">
 
-      <div class="live" id="connection">
+      <div
+        class="live"
+        id="connection"
+      >
         <span class="dot"></span>
         CONNECTING
       </div>
 
       <button
-        class="alertButton"
+        class="alertBtn"
         onclick="enableAlerts()"
       >
         🔔 ENABLE iPHONE ALERTS
@@ -680,34 +694,51 @@ body:after{
   <section class="stats">
 
     <div class="stat">
-      <strong id="monitored">0</strong>
-      <span>Monitored</span>
+      <strong id="monitored">
+        18
+      </strong>
+
+      <span>
+        Monitored Products
+      </span>
     </div>
 
     <div class="stat">
-      <strong id="stock">0</strong>
-      <span>In Stock</span>
+      <strong id="stock">
+        0
+      </strong>
+
+      <span>
+        In Stock Now
+      </span>
     </div>
 
     <div class="stat">
-      <strong id="direct">0</strong>
-      <span>Walmart Direct</span>
+      <strong id="direct">
+        0
+      </strong>
+
+      <span>
+        Walmart Direct
+      </span>
     </div>
 
   </section>
 
   <section class="monitor">
 
-    <div class="monitorHeader">
+    <div class="monitorHead">
 
       <div>
-        <div class="label">
-          WALMART SCANNER
+
+        <div class="smallTitle">
+          POKÉMON RESTOCKS
         </div>
 
         <h2>
           Live Product Monitoring
         </h2>
+
       </div>
 
       <div
@@ -743,7 +774,7 @@ body:after{
   </section>
 
   <div class="footer">
-    WALMART DIRECT • MARKETPLACE FILTER • LIVE INVENTORY ENGINE
+    POKÉMON RESTOCKS • WALMART DIRECT • MARKETPLACE FILTER • LIVE INVENTORY
   </div>
 
 </div>
@@ -751,26 +782,28 @@ body:after{
 <script>
 
 const API =
-  "https://pokemon-live-backend.onrender.com";
+"https://pokemon-live-backend.onrender.com";
 
-function esc(v){
+function esc(value){
 
-  return String(v ?? "")
+  return String(
+    value ?? ""
+  )
 
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;");
 }
 
-function money(v){
+function money(value){
 
-  const n =
-    Number(v);
+  const number =
+    Number(value);
 
   if(
-    !Number.isFinite(n)
+    !Number.isFinite(number)
   ){
     return "—";
   }
@@ -781,14 +814,14 @@ function money(v){
       style:"currency",
       currency:"USD"
     }
-  ).format(n);
+  ).format(number);
 }
 
-function status(x){
+function getStatus(item){
 
   if(
-    x.inStock === true &&
-    x.directSeller === true
+    item.inStock === true &&
+    item.directSeller === true
   ){
     return [
       "WALMART IN STOCK",
@@ -797,7 +830,7 @@ function status(x){
   }
 
   if(
-    x.marketplaceOnly === true
+    item.marketplaceOnly === true
   ){
     return [
       "MARKETPLACE ONLY",
@@ -806,10 +839,10 @@ function status(x){
   }
 
   if(
-    x.discoveryMode === true ||
-    x.error ===
+    item.discoveryMode === true ||
+    item.error ===
       "No validated Walmart-direct result found" ||
-    x.error ===
+    item.error ===
       "No Walmart-sold result found"
   ){
     return [
@@ -833,23 +866,215 @@ function render(items){
 
   const direct =
     items.filter(
-      x =>
-        x.directSeller === true
+      item =>
+        item.directSeller === true
     );
 
   const stock =
     items.filter(
-      x =>
-        x.directSeller === true &&
-        x.inStock === true
+      item =>
+        item.directSeller === true &&
+        item.inStock === true
     );
-
-  document.getElementById(
-    "monitored"
-  ).textContent =
-    items.length;
 
   document.getElementById(
     "stock"
   ).textContent =
-    stock
+    stock.length;
+
+  document.getElementById(
+    "direct"
+  ).textContent =
+    direct.length;
+
+  if(
+    items.length > 18
+  ){
+    document.getElementById(
+      "monitored"
+    ).textContent =
+      items.length;
+  }
+
+  if(
+    !items.length
+  ){
+
+    root.innerHTML = `
+      <div class="empty">
+
+        <div class="radar"></div>
+
+        <strong>
+          No scanner results yet
+        </strong>
+
+        Backend connected.
+        Waiting for next inventory scan.
+
+      </div>
+    `;
+
+    return;
+  }
+
+  root.innerHTML =
+    items.map(
+      item => {
+
+        const [
+          label,
+          badge
+        ] =
+          getStatus(item);
+
+        const cardClass =
+          item.inStock === true &&
+          item.directSeller === true
+
+            ? "stockCard"
+
+            : item.marketplaceOnly === true
+
+              ? "marketCard"
+
+              : "";
+
+        const image =
+          item.image
+
+            ? `
+              <img
+                src="${esc(
+                  item.image
+                )}"
+                alt=""
+              >
+            `
+
+            : `
+              <div class="placeholder">
+                ⚡
+              </div>
+            `;
+
+        const warning =
+          item.marketplaceOnly === true
+
+            ? `
+              <div class="warning">
+
+                ⚠ Marketplace seller detected.
+                No Walmart-direct stock alert
+                will fire.
+
+              </div>
+            `
+
+            : "";
+
+        const buy =
+          item.url &&
+          item.directSeller === true &&
+          item.inStock === true
+
+            ? `
+              <a
+                class="buy"
+                href="${esc(
+                  item.url
+                )}"
+                target="_blank"
+                rel="noopener"
+              >
+                ⚡ OPEN WALMART NOW
+              </a>
+            `
+
+            : "";
+
+        return `
+          <article
+            class="card ${cardClass}"
+          >
+
+            <div class="cardTop">
+
+              <div class="imageBox">
+                ${image}
+              </div>
+
+              <div class="info">
+
+                <div class="set">
+                  ${esc(
+                    item.set ||
+                    "POKÉMON TCG"
+                  )}
+                </div>
+
+                <div class="name">
+                  ${esc(
+                    item.name ||
+                    "Pokémon Product"
+                  )}
+                </div>
+
+                <div class="price">
+                  ${money(
+                    item.price
+                  )}
+                </div>
+
+                <div
+                  class="badge ${badge}"
+                >
+                  ${label}
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="meta">
+
+              RETAILER:
+              ${esc(
+                (
+                  item.retailer ||
+                  "unknown"
+                ).toUpperCase()
+              )}
+
+              <br>
+
+              SELLER:
+              ${esc(
+                item.seller ||
+                "Not available"
+              )}
+
+              ${
+                item.sellerType
+
+                  ? `
+                    <br>
+                    SELLER TYPE:
+                    ${esc(
+                      item.sellerType
+                    )}
+                  `
+
+                  : ""
+              }
+
+              ${
+                item.checkedAt
+
+                  ? `
+                    <br>
+                    CHECKED:
+                    ${
+                      new Date(
+                        item.checkedAt
+                      ).
