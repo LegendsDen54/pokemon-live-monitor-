@@ -5,59 +5,457 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <link rel="manifest" href="manifest.json">
+
 <title>Pokémon Drop Monitor</title>
+
 <style>
-body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;background:#f3f4f6;margin:0;color:#111827}
-main{max-width:680px;margin:auto;padding:18px 14px 100px}.card{background:white;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 2px 12px #00000010}
-h1{margin:0 0 5px;font-size:25px}.muted{color:#6b7280;font-size:13px}.live{color:#087f3f;font-weight:700}
-.drop{border:2px solid #10b981}.priority{background:#fff7ed;border-color:#f97316}
-button,.buy{border:0;border-radius:12px;padding:13px 16px;font-weight:700;font-size:15px;display:inline-block;text-decoration:none;cursor:pointer}
-.buy{background:#111827;color:white}.secondary{background:#e5e7eb;color:#111827}
-.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.pill{font-size:12px;padding:5px 8px;border-radius:999px;background:#dcfce7;color:#166534}
-.alert{font-size:14px;background:#111827;color:white;padding:13px;border-radius:12px;margin:10px 0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;
+  background:#f3f4f6;
+  margin:0;
+  color:#111827;
+}
+
+main{
+  max-width:680px;
+  margin:auto;
+  padding:18px 14px 100px;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:16px;
+  margin:12px 0;
+  box-shadow:0 2px 12px #00000010;
+}
+
+h1{
+  margin:0 0 5px;
+  font-size:25px;
+}
+
+.muted{
+  color:#6b7280;
+  font-size:13px;
+}
+
+.live{
+  color:#087f3f;
+  font-weight:700;
+}
+
+.drop{
+  border:2px solid #10b981;
+}
+
+.priority{
+  background:#fff7ed;
+  border-color:#f97316;
+}
+
+button,.buy{
+  border:0;
+  border-radius:12px;
+  padding:13px 16px;
+  font-weight:700;
+  font-size:15px;
+  display:inline-block;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.buy{
+  background:#111827;
+  color:white;
+}
+
+.secondary{
+  background:#e5e7eb;
+  color:#111827;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+}
+
+.pill{
+  font-size:12px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#dcfce7;
+  color:#166534;
+}
+
+.alert{
+  font-size:14px;
+  background:#111827;
+  color:white;
+  padding:13px;
+  border-radius:12px;
+  margin:10px 0;
+}
+
+.product-image{
+  width:100%;
+  max-height:240px;
+  object-fit:contain;
+  border-radius:12px;
+  margin:12px 0;
+}
 </style>
 </head>
+
 <body>
+
 <main>
+
 <div class="card">
   <h1>⚡ Pokémon Drop Monitor</h1>
-  <div class="muted">Target + Walmart • direct retailer sellers • ≤150% MSRP</div>
-  <p class="live">● MONITOR READY</p>
-  <button class="secondary" onclick="enableAlerts()">Enable iPhone Alerts</button>
+
+  <div class="muted">
+    Target + Walmart • direct retailer sellers • ≤150% MSRP
+  </div>
+
+  <p class="live" id="monitorStatus">
+    ● CONNECTING TO LIVE MONITOR...
+  </p>
+
+  <div class="muted" id="lastScan">
+    Waiting for backend...
+  </div>
+
+  <br>
+
+  <button class="secondary" onclick="enableAlerts()">
+    Enable iPhone Alerts
+  </button>
 </div>
 
 <div id="banner"></div>
-<div id="feed"></div>
+
+<div id="feed">
+  <div class="card">
+    Loading live products...
+  </div>
+</div>
+
 </main>
+
 <script>
-const drops = [
- {name:"Pokémon 30th Anniversary Collection", retailer:"Target", price:49.99, msrp:49.99, seller:"Target", status:"IN STOCK", priority:true, url:"https://www.target.com/s?searchTerm=pokemon+30th+anniversary"},
- {name:"Pokémon 30th Anniversary Collection", retailer:"Walmart", price:59.99, msrp:49.99, seller:"Walmart", status:"ORDERABLE", priority:true, url:"https://www.walmart.com/search?q=pokemon+30th+anniversary"},
- {name:"Pokémon TCG Booster Bundle", retailer:"Target", price:34.99, msrp:29.99, seller:"Target", status:"IN STOCK", priority:false, url:"https://www.target.com/s?searchTerm=pokemon+tcg+booster+bundle"}
-];
-function qualifying(x){return x.seller===x.retailer && x.price<=x.msrp*1.5 && ["IN STOCK","ORDERABLE","PREORDER"].includes(x.status)}
+
+const API_URL =
+  "https://pokemon-live-backend.onrender.com/api/products";
+
+let drops = [];
+
+
+/* =========================
+   LOAD LIVE BACKEND DATA
+========================= */
+
+async function loadLiveProducts(){
+
+  const status =
+    document.getElementById("monitorStatus");
+
+  const lastScan =
+    document.getElementById("lastScan");
+
+  try{
+
+    const response =
+      await fetch(API_URL,{cache:"no-store"});
+
+    if(!response.ok){
+      throw new Error(
+        `Backend returned ${response.status}`
+      );
+    }
+
+    const data =
+      await response.json();
+
+    drops =
+      (data.items || []).map(item => ({
+
+        name:item.name || "Unknown Pokémon Product",
+
+        retailer:
+          item.retailer === "walmart"
+            ? "Walmart"
+            : item.retailer === "target"
+            ? "Target"
+            : item.retailer,
+
+        price:item.price,
+
+        msrp:item.msrp,
+
+        seller:item.seller,
+
+        status:
+          item.inStock
+            ? "IN STOCK"
+            : "OUT OF STOCK",
+
+        priority:
+          item.set === "30th Celebration",
+
+        url:item.url,
+
+        image:item.image,
+
+        checkedAt:item.checkedAt
+
+      }));
+
+
+    status.textContent =
+      "● LIVE MONITOR CONNECTED";
+
+
+    if(data.lastRun){
+
+      const date =
+        new Date(data.lastRun);
+
+      lastScan.textContent =
+        "Last backend scan: " +
+        date.toLocaleString();
+
+    }else{
+
+      lastScan.textContent =
+        "Backend connected • waiting for first scan";
+
+    }
+
+
+    render();
+
+  }catch(error){
+
+    console.error(
+      "Live monitor error:",
+      error
+    );
+
+    status.textContent =
+      "● BACKEND CONNECTION ERROR";
+
+    document.getElementById("feed").innerHTML =
+      `<div class="card">
+        <b>Unable to load live monitor data.</b>
+        <p class="muted">
+          The dashboard will try again automatically.
+        </p>
+      </div>`;
+
+  }
+
+}
+
+
+/* =========================
+   RENDER PRODUCTS
+========================= */
+
 function render(){
- const feed=document.getElementById("feed");
- feed.innerHTML="";
- drops.filter(qualifying).forEach(x=>{
-  const pct=Math.round(x.price/x.msrp*100);
-  feed.innerHTML+=`<div class="card drop ${x.priority?'priority':''}">
-   <div class="row"><b>${x.name}</b><span class="pill">${x.status}</span></div>
-   <p>${x.retailer} • Seller: ${x.seller}</p>
-   <p><b>$${x.price.toFixed(2)}</b> <span class="muted">MSRP $${x.msrp.toFixed(2)} • ${pct}% of MSRP</span></p>
-   ${x.priority?'<div class="alert">🚨 30TH ANNIVERSARY PRIORITY DROP</div>':''}
-   <a class="buy" href="${x.url}" target="_blank" rel="noopener">OPEN PRODUCT →</a>
-  </div>`;
- });
+
+  const feed =
+    document.getElementById("feed");
+
+  feed.innerHTML = "";
+
+
+  if(!drops.length){
+
+    feed.innerHTML =
+      `<div class="card">
+
+        <b>🔎 Walmart Monitor Active</b>
+
+        <p class="muted">
+          No qualifying Walmart-direct Pokémon
+          drops detected right now.
+        </p>
+
+        <p class="muted">
+          Third-party marketplace sellers are ignored.
+        </p>
+
+      </div>`;
+
+    return;
+  }
+
+
+  drops.forEach(x => {
+
+    const priceText =
+      x.price != null
+        ? `$${Number(x.price).toFixed(2)}`
+        : "Price unavailable";
+
+
+    const msrpText =
+      x.msrp != null
+        ? `MSRP $${Number(x.msrp).toFixed(2)}`
+        : "MSRP pending";
+
+
+    const imageHtml =
+      x.image
+        ? `<img
+             class="product-image"
+             src="${x.image}"
+             alt="${x.name}">
+           `
+        : "";
+
+
+    const buyButton =
+      x.url
+        ? `<a
+             class="buy"
+             href="${x.url}"
+             target="_blank"
+             rel="noopener">
+             OPEN PRODUCT →
+           </a>`
+        : "";
+
+
+    feed.innerHTML +=
+      `<div class="card drop ${x.priority ? "priority" : ""}">
+
+        <div class="row">
+
+          <b>${x.name}</b>
+
+          <span class="pill">
+            ${x.status}
+          </span>
+
+        </div>
+
+
+        ${imageHtml}
+
+
+        <p>
+          ${x.retailer}
+          • Seller:
+          ${x.seller || "Unknown"}
+        </p>
+
+
+        <p>
+
+          <b>${priceText}</b>
+
+          <span class="muted">
+            • ${msrpText}
+          </span>
+
+        </p>
+
+
+        ${x.priority
+          ? `<div class="alert">
+               🚨 30TH ANNIVERSARY PRIORITY
+             </div>`
+          : ""
+        }
+
+
+        ${buyButton}
+
+      </div>`;
+
+  });
+
 }
+
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
 async function enableAlerts(){
- if(!("Notification" in window)){alert("This browser does not support notifications.");return}
- const p=await Notification.requestPermission();
- if(p==="granted"){new Notification("Pokémon Drop Monitor",{body:"Alerts enabled. Keep this app installed on your Home Screen."})}
- else alert("Notification permission was not granted.");
+
+  if(!("Notification" in window)){
+
+    alert(
+      "This browser does not support notifications."
+    );
+
+    return;
+
+  }
+
+
+  const permission =
+    await Notification.requestPermission();
+
+
+  if(permission === "granted"){
+
+    new Notification(
+      "Pokémon Drop Monitor",
+      {
+        body:
+          "Alerts enabled for this device."
+      }
+    );
+
+  }else{
+
+    alert(
+      "Notification permission was not granted."
+    );
+
+  }
+
 }
-if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
-render();
+
+
+/* =========================
+   SERVICE WORKER
+========================= */
+
+if("serviceWorker" in navigator){
+
+  navigator.serviceWorker.register("sw.js");
+
+}
+
+
+/* =========================
+   START MONITOR
+========================= */
+
+loadLiveProducts();
+
+/*
+ Refresh dashboard data every 30 seconds.
+
+ IMPORTANT:
+ This reads our backend cache.
+ It does NOT intentionally trigger
+ a new Walmart search every 30 seconds.
+*/
+
+setInterval(
+  loadLiveProducts,
+  30000
+);
+
 </script>
+
 </body>
 </html>
