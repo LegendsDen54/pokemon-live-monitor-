@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1,viewport-fit=cover"
+>
 <meta name="theme-color" content="#020713">
 <title>Pokémon Restock Monitor</title>
 
@@ -466,11 +469,13 @@ body{min-height:100vh}
 @media (orientation:landscape){
   .app{width:min(1200px,96%)}
   .heroSpace{min-height:74vh}
+
   .stats{
     width:min(720px,100%);
     margin-left:auto;
     margin-right:auto;
   }
+
   .monitor{
     width:min(1000px,100%);
     margin:auto;
@@ -486,6 +491,7 @@ body{min-height:100vh}
 <div class="app">
 
 <section class="heroSpace">
+
   <div class="controls">
 
     <div class="live" id="connection">
@@ -502,6 +508,7 @@ body{min-height:100vh}
     </button>
 
   </div>
+
 </section>
 
 <section class="stats">
@@ -531,10 +538,16 @@ body{min-height:100vh}
     <div class="smallTitle">
       POKÉMON RESTOCKS
     </div>
-    <h2>Live Product Monitoring</h2>
+
+    <h2>
+      Live Product Monitoring
+    </h2>
   </div>
 
-  <div class="lastScan" id="lastScan">
+  <div
+    class="lastScan"
+    id="lastScan"
+  >
     Waiting for scan
   </div>
 
@@ -542,14 +555,21 @@ body{min-height:100vh}
 
 <div class="scanLine"></div>
 
-<main class="grid" id="products">
+<main
+  class="grid"
+  id="products"
+>
 
   <div class="empty">
+
     <div class="radar"></div>
+
     <strong>
       Connecting to scanner...
     </strong>
+
     Establishing backend connection.
+
   </div>
 
 </main>
@@ -571,7 +591,9 @@ const API =
   "https://pokemon-live-backend.onrender.com";
 
 const alertButton =
-  document.getElementById("alertButton");
+  document.getElementById(
+    "alertButton"
+  );
 
 
 /* ========================================
@@ -618,7 +640,10 @@ function urlBase64ToUint8Array(
 
   const padding =
     "=".repeat(
-      (4 - base64String.length % 4) % 4
+      (
+        4 -
+        base64String.length % 4
+      ) % 4
     );
 
   const base64 =
@@ -654,7 +679,9 @@ function getStatus(item){
     ];
   }
 
-  if(item.marketplaceOnly === true){
+  if(
+    item.marketplaceOnly === true
+  ){
     return [
       "MARKETPLACE ONLY",
       "orange"
@@ -688,7 +715,9 @@ function getStatus(item){
 function render(items){
 
   const root =
-    document.getElementById("products");
+    document.getElementById(
+      "products"
+    );
 
   const direct =
     items.filter(
@@ -714,6 +743,7 @@ function render(items){
     direct.length;
 
   if(items.length > 18){
+
     document.getElementById(
       "monitored"
     ).textContent =
@@ -813,7 +843,9 @@ function render(items){
           : "";
 
       return `
-        <article class="card ${cardClass}">
+        <article
+          class="card ${cardClass}"
+        >
 
           <div class="cardTop">
 
@@ -838,10 +870,14 @@ function render(items){
               </div>
 
               <div class="price">
-                ${money(item.price)}
+                ${money(
+                  item.price
+                )}
               </div>
 
-              <div class="badge ${badge}">
+              <div
+                class="badge ${badge}"
+              >
                 ${label}
               </div>
 
@@ -873,7 +909,9 @@ function render(items){
                 ? `
                   <br>
                   SELLER TYPE:
-                  ${esc(item.sellerType)}
+                  ${esc(
+                    item.sellerType
+                  )}
                 `
 
                 : ""
@@ -902,6 +940,7 @@ function render(items){
 
         </article>
       `;
+
     }).join("");
 }
 
@@ -928,6 +967,7 @@ async function load(){
       );
 
     if(!response.ok){
+
       throw new Error(
         `Backend ${response.status}`
       );
@@ -937,7 +977,9 @@ async function load(){
       await response.json();
 
     const items =
-      Array.isArray(data.items)
+      Array.isArray(
+        data.items
+      )
         ? data.items
         : [];
 
@@ -988,7 +1030,9 @@ async function load(){
           Scanner connection failed
         </strong>
 
-        ${esc(error.message)}
+        ${esc(
+          error.message
+        )}
 
       </div>
     `;
@@ -1014,6 +1058,7 @@ function setAlertButton(
   );
 
   if(state){
+
     alertButton.classList.add(
       state
     );
@@ -1033,13 +1078,17 @@ async function getServiceWorker(){
       in navigator
     )
   ){
+
     throw new Error(
       "Service workers are not supported."
     );
   }
 
   await navigator.serviceWorker.register(
-    "./sw.js"
+    "./sw.js",
+    {
+      scope:"./"
+    }
   );
 
   return navigator.serviceWorker.ready;
@@ -1047,7 +1096,131 @@ async function getServiceWorker(){
 
 
 /* ========================================
-   REAL WEB PUSH SUBSCRIPTION
+   SAVE EXISTING SUBSCRIPTION
+   TO BACKEND
+
+   This is important because Render
+   may restart and forget its
+   in-memory subscription list.
+======================================== */
+
+async function saveSubscriptionToBackend(
+  subscription
+){
+
+  if(
+    !subscription ||
+    !subscription.endpoint
+  ){
+
+    throw new Error(
+      "Invalid push subscription."
+    );
+  }
+
+  const saveResponse =
+    await fetch(
+      `${API}/api/push/subscribe`,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify(
+            subscription
+          )
+      }
+    );
+
+  if(!saveResponse.ok){
+
+    const message =
+      await saveResponse.text();
+
+    throw new Error(
+      `Backend rejected subscription: ${message}`
+    );
+  }
+
+  return saveResponse.json();
+}
+
+
+/* ========================================
+   GET OR CREATE PUSH SUBSCRIPTION
+======================================== */
+
+async function getOrCreateSubscription(){
+
+  const registration =
+    await getServiceWorker();
+
+  let subscription =
+    await registration
+      .pushManager
+      .getSubscription();
+
+  if(subscription){
+
+    return subscription;
+  }
+
+
+  /* GET PUBLIC VAPID KEY */
+
+  const keyResponse =
+    await fetch(
+      `${API}/api/push/public-key`,
+      {
+        cache:"no-store"
+      }
+    );
+
+  if(!keyResponse.ok){
+
+    throw new Error(
+      "Could not retrieve push public key."
+    );
+  }
+
+  const keyData =
+    await keyResponse.json();
+
+  const publicKey =
+    keyData.publicKey;
+
+  if(!publicKey){
+
+    throw new Error(
+      "Push public key is unavailable."
+    );
+  }
+
+
+  /* CREATE NEW PUSH SUBSCRIPTION */
+
+  subscription =
+    await registration
+      .pushManager
+      .subscribe({
+        userVisibleOnly:true,
+
+        applicationServerKey:
+          urlBase64ToUint8Array(
+            publicKey
+          )
+      });
+
+  return subscription;
+}
+
+
+/* ========================================
+   REAL WEB PUSH SETUP
 ======================================== */
 
 async function enableAlerts(){
@@ -1064,6 +1237,7 @@ async function enableAlerts(){
         in window
       )
     ){
+
       throw new Error(
         "Notifications are unavailable. Open the installed Home Screen app."
       );
@@ -1075,6 +1249,7 @@ async function enableAlerts(){
         in window
       )
     ){
+
       throw new Error(
         "Web Push is unavailable. Open Pokémon Restock Monitor from your iPhone Home Screen."
       );
@@ -1083,14 +1258,18 @@ async function enableAlerts(){
     let permission =
       Notification.permission;
 
-    if(permission === "default"){
+    if(
+      permission === "default"
+    ){
 
       permission =
         await Notification
           .requestPermission();
     }
 
-    if(permission === "denied"){
+    if(
+      permission === "denied"
+    ){
 
       setAlertButton(
         "⚠️ ALERTS BLOCKED",
@@ -1104,7 +1283,9 @@ async function enableAlerts(){
       return;
     }
 
-    if(permission !== "granted"){
+    if(
+      permission !== "granted"
+    ){
 
       setAlertButton(
         "🔔 ENABLE iPHONE ALERTS"
@@ -1113,102 +1294,12 @@ async function enableAlerts(){
       return;
     }
 
+    const subscription =
+      await getOrCreateSubscription();
 
-    /* GET ACTIVE SERVICE WORKER */
-
-    const registration =
-      await getServiceWorker();
-
-
-    /* CHECK EXISTING SUBSCRIPTION */
-
-    let subscription =
-      await registration
-        .pushManager
-        .getSubscription();
-
-
-    /* GET OUR PUBLIC VAPID KEY */
-
-    if(!subscription){
-
-      const keyResponse =
-        await fetch(
-          `${API}/api/push/public-key`,
-          {
-            cache:"no-store"
-          }
-        );
-
-      if(!keyResponse.ok){
-
-        throw new Error(
-          "Could not retrieve push public key."
-        );
-      }
-
-      const keyData =
-        await keyResponse.json();
-
-      const publicKey =
-        keyData.publicKey;
-
-      if(!publicKey){
-
-        throw new Error(
-          "Push public key is unavailable."
-        );
-      }
-
-
-      /* CREATE iPHONE PUSH SUBSCRIPTION */
-
-      subscription =
-        await registration
-          .pushManager
-          .subscribe({
-            userVisibleOnly:true,
-
-            applicationServerKey:
-              urlBase64ToUint8Array(
-                publicKey
-              )
-          });
-    }
-
-
-    /* SEND SUBSCRIPTION TO BACKEND */
-
-    const saveResponse =
-      await fetch(
-        `${API}/api/push/subscribe`,
-        {
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify(
-              subscription
-            )
-        }
-      );
-
-    if(!saveResponse.ok){
-
-      const message =
-        await saveResponse.text();
-
-      throw new Error(
-        `Backend rejected subscription: ${message}`
-      );
-    }
-
-
-    /* SUCCESS */
+    await saveSubscriptionToBackend(
+      subscription
+    );
 
     setAlertButton(
       "✅ PUSH ALERTS ACTIVE",
@@ -1216,7 +1307,7 @@ async function enableAlerts(){
     );
 
     console.log(
-      "Push subscription active."
+      "Push subscription active and registered with backend."
     );
 
   }
@@ -1251,10 +1342,19 @@ alertButton.addEventListener(
 
 
 /* ========================================
-   CHECK EXISTING PUSH STATE
+   RESTORE + RE-REGISTER PUSH
+
+   If the iPhone already has a
+   subscription, opening the Home
+   Screen app automatically sends
+   it back to the backend.
+
+   This repairs the mismatch where
+   iPhone says ACTIVE but Render
+   says subscriptions: 0.
 ======================================== */
 
-async function updateAlertButton(){
+async function restorePushRegistration(){
 
   try{
 
@@ -1272,6 +1372,7 @@ async function updateAlertButton(){
         in window
       )
     ){
+
       return;
     }
 
@@ -1292,6 +1393,11 @@ async function updateAlertButton(){
       Notification.permission !==
       "granted"
     ){
+
+      setAlertButton(
+        "🔔 ENABLE iPHONE ALERTS"
+      );
+
       return;
     }
 
@@ -1303,22 +1409,53 @@ async function updateAlertButton(){
         .pushManager
         .getSubscription();
 
-    if(subscription){
+    if(!subscription){
 
       setAlertButton(
-        "✅ PUSH ALERTS ACTIVE",
-        "enabled"
+        "🔔 ENABLE iPHONE ALERTS"
       );
 
+      return;
     }
+
+
+    /*
+      CRITICAL FIX:
+
+      Do not merely show ACTIVE.
+      Re-send the existing iPhone
+      subscription to the backend.
+    */
+
+    setAlertButton(
+      "🔔 SYNCING ALERTS..."
+    );
+
+    await saveSubscriptionToBackend(
+      subscription
+    );
+
+    setAlertButton(
+      "✅ PUSH ALERTS ACTIVE",
+      "enabled"
+    );
+
+    console.log(
+      "Existing push subscription re-synced with backend."
+    );
 
   }
 
   catch(error){
 
-    console.log(
-      "Push state check:",
+    console.error(
+      "Push restore failed:",
       error
+    );
+
+    setAlertButton(
+      "⚠️ PUSH SYNC FAILED",
+      "blocked"
     );
   }
 }
@@ -1328,18 +1465,51 @@ async function updateAlertButton(){
    START APP
 ======================================== */
 
-updateAlertButton();
+/*
+  Dashboard and push recovery run
+  independently. A push failure does
+  not break inventory display.
+*/
 
 load();
 
+restorePushRegistration();
+
+
 /*
-Dashboard refresh only.
-This does NOT call Walmart directly.
+  Dashboard refresh only.
+
+  This endpoint reads backend state.
+  It does NOT contact Walmart.
 */
 
 setInterval(
   load,
   30000
+);
+
+
+/*
+  When the installed app returns
+  to the foreground, re-register
+  the existing subscription again.
+
+  This makes recovery from a backend
+  restart automatic.
+*/
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if(
+      document.visibilityState ===
+      "visible"
+    ){
+
+      restorePushRegistration();
+    }
+  }
 );
 
 </script>
