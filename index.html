@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
+
 <link rel="manifest" href="manifest.json">
 
 <title>Pokémon Drop Monitor</title>
@@ -15,11 +16,13 @@ body{
   margin:0;
   color:#111827;
 }
+
 main{
   max-width:680px;
   margin:auto;
   padding:18px 14px 100px;
 }
+
 .card{
   background:white;
   border-radius:18px;
@@ -27,41 +30,71 @@ main{
   margin:12px 0;
   box-shadow:0 2px 12px #00000010;
 }
-h1{margin:0 0 5px;font-size:25px}
-h2{font-size:19px;margin:22px 0 8px}
-.muted{color:#6b7280;font-size:13px}
-.live{color:#087f3f;font-weight:700}
+
+h1{
+  margin:0 0 5px;
+  font-size:25px;
+}
+
+h2{
+  font-size:19px;
+  margin:22px 0 8px;
+}
+
+.muted{
+  color:#6b7280;
+  font-size:13px;
+}
+
+.live{
+  color:#087f3f;
+  font-weight:700;
+}
+
 .row{
   display:flex;
   justify-content:space-between;
   gap:10px;
   align-items:center;
 }
+
 .stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:8px;
   margin-top:14px;
 }
+
 .stat{
   background:#f3f4f6;
   border-radius:12px;
   padding:10px;
   text-align:center;
 }
+
 .stat b{
   display:block;
   font-size:20px;
 }
+
 .product{
   border:2px solid #e5e7eb;
 }
+
 .product.in-stock{
   border-color:#10b981;
 }
-.product.priority{
-  border-color:#f97316;
+
+.product.marketplace{
+  border-color:#f59e0b;
 }
+
+.product.priority{
+  box-shadow:
+    0 0 0 1px #f97316,
+    0 2px 12px #00000010;
+}
+
 .pill{
   font-size:11px;
   padding:5px 8px;
@@ -69,19 +102,29 @@ h2{font-size:19px;margin:22px 0 8px}
   font-weight:700;
   white-space:nowrap;
 }
+
 .pill-live{
   background:#dcfce7;
   color:#166534;
 }
-.pill-out{
-  background:#fee2e2;
-  color:#991b1b;
+
+.pill-market{
+  background:#fef3c7;
+  color:#92400e;
 }
+
 .pill-scan{
   background:#e5e7eb;
   color:#374151;
 }
-button,.buy{
+
+.pill-out{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+button,
+.buy{
   border:0;
   border-radius:12px;
   padding:13px 16px;
@@ -91,14 +134,17 @@ button,.buy{
   text-decoration:none;
   cursor:pointer;
 }
+
 .buy{
   background:#111827;
   color:white;
 }
+
 .secondary{
   background:#e5e7eb;
   color:#111827;
 }
+
 .product-image{
   width:100%;
   max-height:240px;
@@ -106,6 +152,7 @@ button,.buy{
   border-radius:12px;
   margin:12px 0;
 }
+
 .priority-alert{
   font-size:13px;
   background:#fff7ed;
@@ -114,6 +161,16 @@ button,.buy{
   border-radius:10px;
   margin:10px 0;
 }
+
+.marketplace-warning{
+  font-size:13px;
+  background:#fffbeb;
+  border:1px solid #fbbf24;
+  padding:10px;
+  border-radius:10px;
+  margin:10px 0;
+}
+
 .scan-time{
   margin-top:10px;
 }
@@ -121,13 +178,15 @@ button,.buy{
 </head>
 
 <body>
+
 <main>
 
 <div class="card">
+
   <h1>⚡ Pokémon Drop Monitor</h1>
 
   <div class="muted">
-    Target + Walmart • direct retailer sellers • ≤150% MSRP
+    Walmart Live Scanner • direct retailer inventory only
   </div>
 
   <p class="live" id="monitorStatus">
@@ -139,6 +198,7 @@ button,.buy{
   </div>
 
   <div class="stats">
+
     <div class="stat">
       <b id="totalCount">0</b>
       <span class="muted">Monitored</span>
@@ -146,28 +206,35 @@ button,.buy{
 
     <div class="stat">
       <b id="liveCount">0</b>
-      <span class="muted">In Stock</span>
+      <span class="muted">Walmart Stock</span>
     </div>
 
     <div class="stat">
       <b id="directCount">0</b>
-      <span class="muted">Direct</span>
+      <span class="muted">Walmart Direct</span>
     </div>
+
   </div>
 
   <br>
 
-  <button class="secondary" onclick="enableAlerts()">
+  <button
+    class="secondary"
+    onclick="enableAlerts()"
+  >
     Enable iPhone Alerts
   </button>
+
 </div>
 
 <h2>Walmart Scanner</h2>
 
 <div id="feed">
+
   <div class="card">
     Loading monitored products...
   </div>
+
 </div>
 
 </main>
@@ -182,34 +249,50 @@ let products = [];
 async function loadLiveProducts(){
 
   const status =
-    document.getElementById("monitorStatus");
+    document.getElementById(
+      "monitorStatus"
+    );
 
   try{
 
     const response =
-      await fetch(API_URL,{cache:"no-store"});
+      await fetch(
+        API_URL,
+        {
+          cache:"no-store"
+        }
+      );
 
     if(!response.ok){
-      throw new Error(`Backend returned ${response.status}`);
+      throw new Error(
+        `Backend returned ${response.status}`
+      );
     }
 
     const data =
       await response.json();
 
-    products = data.items || [];
+    products =
+      data.items || [];
 
     status.textContent =
       "● LIVE MONITOR CONNECTED";
 
     if(data.lastRun){
 
-      document.getElementById("lastScan").textContent =
+      document.getElementById(
+        "lastScan"
+      ).textContent =
         "Last backend scan: " +
-        new Date(data.lastRun).toLocaleString();
+        new Date(
+          data.lastRun
+        ).toLocaleString();
 
     }else{
 
-      document.getElementById("lastScan").textContent =
+      document.getElementById(
+        "lastScan"
+      ).textContent =
         "Backend connected • waiting for scan";
 
     }
@@ -224,63 +307,122 @@ async function loadLiveProducts(){
     status.textContent =
       "● BACKEND CONNECTION ERROR";
 
-    document.getElementById("feed").innerHTML =
-      `<div class="card">
-        <b>Unable to load scanner data.</b>
+    document.getElementById(
+      "feed"
+    ).innerHTML =
+      `
+      <div class="card">
+        <b>
+          Unable to load scanner data.
+        </b>
+
         <p class="muted">
           The dashboard will retry automatically.
         </p>
-      </div>`;
+      </div>
+      `;
   }
 }
 
 function updateStats(){
 
-  document.getElementById("totalCount").textContent =
+  document.getElementById(
+    "totalCount"
+  ).textContent =
     products.length;
 
-  document.getElementById("liveCount").textContent =
-    products.filter(x => x.inStock).length;
+  document.getElementById(
+    "liveCount"
+  ).textContent =
+    products.filter(
+      x =>
+        x.inStock === true &&
+        x.directSeller === true
+    ).length;
 
-  document.getElementById("directCount").textContent =
-    products.filter(x => x.directSeller).length;
+  document.getElementById(
+    "directCount"
+  ).textContent =
+    products.filter(
+      x =>
+        x.directSeller === true
+    ).length;
+}
+
+function getDisplayStatus(x){
+
+  if(
+    x.inStock === true &&
+    x.directSeller === true
+  ){
+    return {
+      text:"WALMART IN STOCK",
+      className:"pill-live"
+    };
+  }
+
+  if(
+    x.marketplaceOnly === true
+  ){
+    return {
+      text:"MARKETPLACE ONLY",
+      className:"pill-market"
+    };
+  }
+
+  if(
+    x.discoveryMode === true ||
+    x.error ===
+      "No validated Walmart-direct result found" ||
+    x.error ===
+      "No Walmart-sold result found"
+  ){
+    return {
+      text:"NO DIRECT MATCH",
+      className:"pill-scan"
+    };
+  }
+
+  return {
+    text:"OUT OF STOCK",
+    className:"pill-out"
+  };
 }
 
 function render(){
 
   const feed =
-    document.getElementById("feed");
+    document.getElementById(
+      "feed"
+    );
 
   feed.innerHTML = "";
 
   if(!products.length){
 
     feed.innerHTML =
-      `<div class="card">
-        <b>No scanner results yet.</b>
+      `
+      <div class="card">
+
+        <b>
+          No scanner results yet.
+        </b>
+
         <p class="muted">
-          Waiting for the backend's first completed scan.
+          Waiting for the backend's
+          first completed scan.
         </p>
-      </div>`;
+
+      </div>
+      `;
 
     return;
   }
 
   products.forEach(x => {
 
-    let statusText = "OUT OF STOCK";
-    let pillClass = "pill-out";
-
-    if(x.inStock && x.directSeller){
-      statusText = "IN STOCK";
-      pillClass = "pill-live";
-    }
-    else if(
-      x.error === "No Walmart-sold result found"
-    ){
-      statusText = "NO DIRECT MATCH";
-      pillClass = "pill-scan";
-    }
+    const display =
+      getDisplayStatus(x);
 
     const price =
       x.price != null
@@ -294,118 +436,204 @@ function render(){
 
     const image =
       x.image
-        ? `<img
-             class="product-image"
-             src="${x.image}"
-             alt="${x.name}">
-           `
+        ? `
+          <img
+            class="product-image"
+            src="${x.image}"
+            alt="${x.name}"
+          >
+          `
         : "";
 
+    /*
+      Purchase button ONLY appears when
+      Walmart itself is the seller and
+      the product is actually in stock.
+    */
     const buy =
-      x.url && x.directSeller
-        ? `<a
-             class="buy"
-             href="${x.url}"
-             target="_blank"
-             rel="noopener">
-             OPEN PRODUCT →
-           </a>`
+      x.url &&
+      x.directSeller === true &&
+      x.inStock === true
+        ? `
+          <a
+            class="buy"
+            href="${x.url}"
+            target="_blank"
+            rel="noopener"
+          >
+            OPEN WALMART PRODUCT →
+          </a>
+          `
         : "";
 
     const checked =
       x.checkedAt
-        ? new Date(x.checkedAt).toLocaleString()
+        ? new Date(
+            x.checkedAt
+          ).toLocaleString()
         : "Not scanned yet";
 
     const priority =
-      x.set === "30th Celebration";
+      x.set ===
+      "30th Celebration";
 
-    feed.innerHTML += `
-      <div class="card product
-        ${x.inStock && x.directSeller ? "in-stock" : ""}
-        ${priority ? "priority" : ""}">
+    const marketplaceWarning =
+      x.marketplaceOnly === true
+        ? `
+          <div class="marketplace-warning">
+            ⚠️ Marketplace offer detected.
+            This is not Walmart-direct inventory,
+            so no stock alert will fire.
+          </div>
+          `
+        : "";
+
+    const sellerText =
+      x.seller
+        ? x.seller
+        : "No Walmart-direct seller detected";
+
+    feed.innerHTML +=
+      `
+      <div
+        class="
+          card
+          product
+          ${
+            x.inStock &&
+            x.directSeller
+              ? "in-stock"
+              : ""
+          }
+          ${
+            x.marketplaceOnly
+              ? "marketplace"
+              : ""
+          }
+          ${
+            priority
+              ? "priority"
+              : ""
+          }
+        "
+      >
 
         <div class="row">
 
-          <b>${x.name}</b>
+          <b>
+            ${x.name}
+          </b>
 
-          <span class="pill ${pillClass}">
-            ${statusText}
+          <span
+            class="pill ${display.className}"
+          >
+            ${display.text}
           </span>
 
         </div>
 
         <p class="muted">
-          ${x.set || "Pokémon TCG"} • Walmart
+          ${x.set || "Pokémon TCG"}
+          • Walmart
         </p>
 
         ${image}
 
         <p>
           <b>${price}</b>
-          <span class="muted"> • ${msrp}</span>
+          <span class="muted">
+            • ${msrp}
+          </span>
         </p>
 
         <p class="muted">
-          Seller:
-          ${x.seller || "No Walmart-direct listing detected"}
+          Seller: ${sellerText}
         </p>
 
-        ${priority
-          ? `<div class="priority-alert">
-               🚨 30TH ANNIVERSARY PRIORITY MONITOR
-             </div>`
-          : ""
+        ${
+          x.sellerType
+            ? `
+              <p class="muted">
+                Seller type:
+                ${x.sellerType}
+              </p>
+              `
+            : ""
+        }
+
+        ${marketplaceWarning}
+
+        ${
+          priority
+            ? `
+              <div class="priority-alert">
+                🚨 30TH ANNIVERSARY
+                PRIORITY MONITOR
+              </div>
+              `
+            : ""
         }
 
         ${buy}
 
         <div class="muted scan-time">
-          Last checked: ${checked}
+          Last checked:
+          ${checked}
         </div>
 
       </div>
-    `;
+      `;
   });
 }
 
 async function enableAlerts(){
 
-  if(!("Notification" in window)){
-    alert("Notifications are not available in this browser.");
+  if(
+    !("Notification" in window)
+  ){
+    alert(
+      "Notifications are not available in this browser."
+    );
     return;
   }
 
   const permission =
     await Notification.requestPermission();
 
-  if(permission === "granted"){
+  if(
+    permission === "granted"
+  ){
 
     new Notification(
       "Pokémon Drop Monitor",
       {
-        body:"iPhone monitor notifications enabled."
+        body:
+          "iPhone monitor notifications enabled."
       }
     );
 
   }else{
 
-    alert("Notification permission was not granted.");
-
+    alert(
+      "Notification permission was not granted."
+    );
   }
 }
 
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
+if(
+  "serviceWorker" in navigator
+){
+  navigator.serviceWorker.register(
+    "sw.js"
+  );
 }
 
 loadLiveProducts();
 
-/*
-This refreshes cached scanner STATUS every 30 seconds.
-It does NOT request a new Walmart inventory scan.
-*/
-setInterval(loadLiveProducts,30000);
+setInterval(
+  loadLiveProducts,
+  30000
+);
 
 </script>
 
