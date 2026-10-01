@@ -1,0 +1,9 @@
+{
+  "name": "Pok\u00e9mon Drop Monitor",
+  "short_name": "Pok\u00e9 Drops",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#111827",
+  "icons": []
+}
