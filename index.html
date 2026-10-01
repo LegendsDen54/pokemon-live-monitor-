@@ -3,729 +3,853 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#030713">
+<meta name="theme-color" content="#02050b">
 <title>Pokémon Drop Monitor</title>
 
 <style>
 *{box-sizing:border-box}
+
 :root{
-  --bg:#030713;
-  --panel:rgba(8,15,32,.88);
-  --panel2:rgba(13,23,46,.92);
-  --line:rgba(112,184,255,.18);
-  --text:#f5f8ff;
-  --muted:#8fa3bd;
-  --blue:#2ea8ff;
-  --blue2:#176cff;
-  --gold:#ffd84a;
-  --green:#38e889;
-  --red:#ff4d5f;
-  --orange:#ff9d32;
+  --blue:#22a9ff;
+  --cyan:#6edcff;
+  --green:#42f59b;
+  --gold:#ffd447;
+  --orange:#ff9e3d;
+  --red:#ff5668;
+  --text:#f5f9ff;
+  --muted:#91a3bb;
 }
-html{background:#030713}
-body{
+
+html,body{
   margin:0;
-  min-height:100vh;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  min-height:100%;
+  background:#02050b;
   color:var(--text);
-  background:
-    radial-gradient(circle at -10% 20%,rgba(0,137,255,.30),transparent 31%),
-    radial-gradient(circle at 110% 28%,rgba(255,58,20,.24),transparent 32%),
-    radial-gradient(circle at 50% 0%,rgba(40,83,190,.16),transparent 42%),
-    linear-gradient(180deg,#050a18,#02040b 70%);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(1,4,10,.08) 0%,
+      rgba(1,4,10,.28) 35%,
+      rgba(1,4,10,.78) 72%,
+      #02050b 100%
+    ),
+    url("./mega_charizard_x_drop_monitor.png");
+
+  background-size:cover;
+  background-position:center top;
+  background-repeat:no-repeat;
   background-attachment:fixed;
 }
-body:before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  opacity:.35;
-  background-image:
-    linear-gradient(rgba(64,159,255,.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(64,159,255,.035) 1px,transparent 1px);
-  background-size:28px 28px;
-}
+
 body:after{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
   background:
-    linear-gradient(115deg,transparent 0 47%,rgba(46,168,255,.04) 49%,transparent 51%),
-    linear-gradient(65deg,transparent 0 47%,rgba(255,106,45,.035) 49%,transparent 51%);
+    radial-gradient(
+      circle at 15% 35%,
+      rgba(30,156,255,.12),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 85% 35%,
+      rgba(255,83,35,.10),
+      transparent 30%
+    );
 }
+
 .app{
   width:min(1180px,100%);
   margin:auto;
-  padding:18px 14px 70px;
+  padding:18px 13px 70px;
   position:relative;
   z-index:1;
 }
-.hero{
-  position:relative;
-  overflow:hidden;
-  border:1px solid rgba(80,165,255,.28);
-  border-radius:26px;
-  padding:24px 18px 20px;
-  background:
-    radial-gradient(circle at 0 50%,rgba(0,137,255,.23),transparent 38%),
-    radial-gradient(circle at 100% 50%,rgba(255,81,25,.18),transparent 38%),
-    linear-gradient(145deg,rgba(11,22,48,.96),rgba(5,8,19,.96));
-  box-shadow:
-    0 25px 70px rgba(0,0,0,.48),
-    inset 0 0 55px rgba(47,137,255,.06);
-}
-.hero:before{
-  content:"⚡";
-  position:absolute;
-  left:-18px;
-  bottom:-30px;
-  font-size:150px;
-  opacity:.08;
-  transform:rotate(-12deg);
-  filter:drop-shadow(0 0 20px #168cff);
-}
-.hero:after{
-  content:"🔥";
-  position:absolute;
-  right:-15px;
-  bottom:-27px;
-  font-size:135px;
-  opacity:.09;
-  transform:rotate(9deg);
-  filter:drop-shadow(0 0 20px #ff552b);
-}
-.topline{
-  position:relative;
-  z-index:2;
+
+.top{
+  min-height:360px;
   display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding-bottom:16px;
 }
-.brandMini{
-  color:#7fbfff;
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:2px;
-}
-.version{
-  color:#647995;
-  font-size:10px;
-}
-.title{
-  position:relative;
-  z-index:2;
-  text-align:center;
-  margin:22px 0 7px;
-}
-.title h1{
-  margin:0;
-  font-size:clamp(32px,9vw,64px);
-  line-height:.86;
-  font-weight:1000;
-  font-style:italic;
-  letter-spacing:-2px;
-  text-transform:uppercase;
-  color:#fff4a6;
-  text-shadow:
-    0 2px 0 #bf7d00,
-    0 0 18px rgba(255,208,48,.4),
-    0 0 40px rgba(46,168,255,.25);
-}
-.title h1 span{
-  display:block;
-  color:#f7fbff;
-  font-size:.58em;
-  letter-spacing:4px;
-  margin-top:10px;
-  text-shadow:0 0 20px rgba(46,168,255,.6);
-}
-.title p{
-  margin:15px auto 0;
-  color:#93a7c2;
-  font-size:12px;
-  max-width:500px;
-  line-height:1.5;
-}
-.retailers{
-  position:relative;
-  z-index:2;
+
+.liveRow{
   display:flex;
   justify-content:center;
-  gap:8px;
   flex-wrap:wrap;
-  margin-top:17px;
+  gap:9px;
 }
-.retailer{
-  padding:7px 11px;
+
+.live,
+.alertButton{
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+
+  padding:10px 14px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.045);
-  color:#8393aa;
   font-size:10px;
-  font-weight:900;
+  font-weight:950;
   letter-spacing:.6px;
 }
-.retailer.active{
-  color:#8dceff;
-  border-color:rgba(46,168,255,.4);
-  background:rgba(46,168,255,.12);
-  box-shadow:0 0 18px rgba(46,168,255,.12);
-}
-.statusRow{
-  position:relative;
-  z-index:2;
-  margin-top:20px;
+
+.live{
   display:flex;
-  justify-content:center;
-  gap:9px;
-  flex-wrap:wrap;
-}
-.connection,.notify{
-  min-height:38px;
-  border-radius:999px;
-  padding:9px 13px;
-  display:inline-flex;
   align-items:center;
   gap:8px;
-  font-size:11px;
-  font-weight:950;
-  letter-spacing:.5px;
-}
-.connection{
+
   color:var(--green);
-  background:rgba(56,232,137,.10);
-  border:1px solid rgba(56,232,137,.3);
+
+  background:rgba(5,22,24,.72);
+
+  border:
+    1px solid rgba(66,245,155,.35);
+
+  box-shadow:
+    0 0 25px rgba(66,245,155,.12);
 }
+
 .dot{
-  width:8px;height:8px;border-radius:50%;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+
   background:currentColor;
-  box-shadow:0 0 12px currentColor;
-  animation:pulse 1.6s infinite;
+
+  box-shadow:
+    0 0 12px currentColor;
+
+  animation:pulse 1.5s infinite;
 }
+
 @keyframes pulse{
-  50%{opacity:.35;transform:scale(.75)}
+  50%{
+    opacity:.35;
+    transform:scale(.75);
+  }
 }
-.notify{
-  color:#b8dcff;
-  background:rgba(46,168,255,.10);
-  border:1px solid rgba(46,168,255,.28);
+
+.alertButton{
   cursor:pointer;
+
+  color:#bde6ff;
+
+  background:rgba(5,25,47,.72);
+
+  border:
+    1px solid rgba(34,169,255,.35);
 }
+
 .stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:9px;
-  margin:14px 0 22px;
+  gap:8px;
+
+  margin:0 0 18px;
 }
+
 .stat{
-  position:relative;
-  overflow:hidden;
   text-align:center;
-  padding:15px 6px;
-  border-radius:18px;
-  border:1px solid var(--line);
-  background:linear-gradient(145deg,rgba(14,27,53,.92),rgba(6,11,24,.92));
-  box-shadow:0 12px 30px rgba(0,0,0,.22);
+
+  padding:14px 5px;
+
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(9,22,43,.88),
+      rgba(3,8,17,.91)
+    );
+
+  border:
+    1px solid rgba(73,166,240,.23);
+
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.35);
 }
-.stat:before{
-  content:"";
-  position:absolute;
-  left:15%;right:15%;top:0;
-  height:1px;
-  background:linear-gradient(90deg,transparent,#2ea8ff,transparent);
-}
+
 .stat strong{
   display:block;
-  font-size:27px;
-  line-height:1;
-  color:#fff;
-  text-shadow:0 0 18px rgba(46,168,255,.35);
+
+  font-size:25px;
+
+  text-shadow:
+    0 0 16px rgba(34,169,255,.4);
 }
+
 .stat span{
   display:block;
-  margin-top:7px;
-  color:#71859f;
+
+  margin-top:5px;
+
+  color:#8095ae;
+
   font-size:9px;
+
   font-weight:900;
-  letter-spacing:.7px;
+
   text-transform:uppercase;
+
+  letter-spacing:.7px;
 }
-.sectionHead{
+
+.monitor{
+  overflow:hidden;
+
+  border-radius:22px;
+
+  border:
+    1px solid rgba(60,162,242,.28);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(7,17,35,.91),
+      rgba(3,8,17,.94)
+    );
+
+  backdrop-filter:blur(17px);
+  -webkit-backdrop-filter:blur(17px);
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,.45);
+}
+
+.monitorHeader{
+  padding:16px;
+
   display:flex;
+
   justify-content:space-between;
+
   align-items:flex-end;
+
   gap:12px;
-  margin:8px 3px 13px;
+
+  border-bottom:
+    1px solid rgba(255,255,255,.06);
 }
-.eyebrow{
-  color:#2ea8ff;
+
+.label{
+  color:var(--blue);
+
   font-size:9px;
+
   font-weight:950;
+
   letter-spacing:1.5px;
 }
-.sectionHead h2{
+
+.monitorHeader h2{
   margin:4px 0 0;
-  font-size:19px;
-  letter-spacing:.2px;
+
+  font-size:18px;
 }
+
 .lastScan{
-  color:#6f829d;
-  font-size:10px;
+  color:#7489a4;
+
+  font-size:9px;
+
   text-align:right;
 }
-.scannerLine{
+
+.scanLine{
   height:2px;
-  margin-bottom:14px;
+
   overflow:hidden;
-  background:rgba(255,255,255,.04);
+
+  background:rgba(255,255,255,.03);
 }
-.scannerLine:after{
+
+.scanLine:after{
   content:"";
+
   display:block;
+
   height:100%;
-  width:35%;
-  background:linear-gradient(90deg,transparent,#2ea8ff,transparent);
-  box-shadow:0 0 14px #2ea8ff;
-  animation:scan 2.4s linear infinite;
+
+  width:30%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #36bdff,
+      transparent
+    );
+
+  box-shadow:
+    0 0 15px #36bdff;
+
+  animation:scan 2s linear infinite;
 }
+
 @keyframes scan{
   from{transform:translateX(-120%)}
-  to{transform:translateX(390%)}
+  to{transform:translateX(440%)}
 }
+
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:13px;
+
+  grid-template-columns:
+    repeat(auto-fit,minmax(270px,1fr));
+
+  gap:11px;
+
+  padding:12px;
 }
+
 .card{
-  position:relative;
-  overflow:hidden;
-  border-radius:21px;
-  padding:14px;
-  border:1px solid rgba(85,151,221,.18);
+  padding:13px;
+
+  border-radius:17px;
+
   background:
-    radial-gradient(circle at 100% 0%,rgba(46,168,255,.09),transparent 35%),
-    linear-gradient(145deg,rgba(14,25,48,.96),rgba(5,10,22,.96));
-  box-shadow:0 16px 40px rgba(0,0,0,.28);
+    linear-gradient(
+      145deg,
+      rgba(14,29,54,.94),
+      rgba(5,11,23,.96)
+    );
+
+  border:
+    1px solid rgba(75,158,226,.18);
 }
-.card.marketCard{
-  border-color:rgba(255,157,50,.25);
-  background:
-    radial-gradient(circle at 100% 0%,rgba(255,157,50,.08),transparent 35%),
-    linear-gradient(145deg,rgba(25,22,35,.96),rgba(7,9,19,.96));
+
+.stockCard{
+  border-color:
+    rgba(66,245,155,.4);
+
+  box-shadow:
+    inset 0 0 30px rgba(66,245,155,.03),
+    0 0 22px rgba(66,245,155,.06);
 }
-.card.stockCard{
-  border-color:rgba(56,232,137,.35);
-  box-shadow:0 0 25px rgba(56,232,137,.08),0 16px 40px rgba(0,0,0,.3);
+
+.marketCard{
+  border-color:
+    rgba(255,158,61,.28);
 }
+
 .cardTop{
   display:flex;
-  gap:13px;
+  gap:12px;
 }
+
 .imageBox{
-  width:100px;
-  height:112px;
+  width:94px;
+  height:105px;
+
   flex:none;
-  border-radius:15px;
+
   display:grid;
+
   place-items:center;
+
   overflow:hidden;
+
+  border-radius:13px;
+
   background:
-    radial-gradient(circle,rgba(255,255,255,.13),rgba(255,255,255,.025));
-  border:1px solid rgba(255,255,255,.08);
+    rgba(255,255,255,.05);
+
+  border:
+    1px solid rgba(255,255,255,.08);
 }
+
 .imageBox img{
   width:100%;
   height:100%;
+
   object-fit:contain;
+
   background:white;
-  padding:4px;
+
+  padding:3px;
 }
-.placeholder{font-size:35px;opacity:.6}
-.info{min-width:0;flex:1}
+
+.placeholder{
+  font-size:31px;
+  opacity:.6;
+}
+
+.info{
+  min-width:0;
+  flex:1;
+}
+
 .set{
-  color:#54b7ff;
-  font-size:9px;
+  color:#57bfff;
+
+  font-size:8px;
+
   font-weight:950;
-  letter-spacing:1px;
+
+  letter-spacing:.8px;
+
   text-transform:uppercase;
 }
+
 .name{
   margin-top:5px;
-  color:#f5f8ff;
-  font-size:14px;
+
+  font-size:13px;
+
+  line-height:1.3;
+
   font-weight:850;
-  line-height:1.28;
 }
+
 .price{
   margin-top:8px;
-  color:#ffe266;
-  font-size:23px;
+
+  color:var(--gold);
+
+  font-size:22px;
+
   font-weight:1000;
-  text-shadow:0 0 15px rgba(255,216,74,.18);
 }
+
 .badge{
   display:inline-flex;
-  align-items:center;
-  margin-top:11px;
+
+  margin-top:9px;
+
+  padding:6px 8px;
+
   border-radius:999px;
-  padding:7px 9px;
-  font-size:9px;
+
+  font-size:8px;
+
   font-weight:1000;
+
   letter-spacing:.5px;
 }
-.green{color:#52efa0;background:rgba(56,232,137,.11);border:1px solid rgba(56,232,137,.3)}
-.orange{color:#ffb95f;background:rgba(255,157,50,.11);border:1px solid rgba(255,157,50,.3)}
-.red{color:#ff7985;background:rgba(255,77,95,.10);border:1px solid rgba(255,77,95,.25)}
-.gray{color:#a4b2c5;background:rgba(164,178,197,.08);border:1px solid rgba(164,178,197,.17)}
-.meta{
-  margin-top:11px;
-  padding-top:10px;
-  border-top:1px solid rgba(255,255,255,.06);
-  color:#7f91a9;
-  font-size:10px;
-  line-height:1.65;
+
+.green{
+  color:#59f5a8;
+
+  background:
+    rgba(66,245,155,.10);
+
+  border:
+    1px solid rgba(66,245,155,.3);
 }
-.warning{
+
+.orange{
+  color:#ffc16e;
+
+  background:
+    rgba(255,158,61,.10);
+
+  border:
+    1px solid rgba(255,158,61,.3);
+}
+
+.red{
+  color:#ff7a88;
+
+  background:
+    rgba(255,86,104,.10);
+
+  border:
+    1px solid rgba(255,86,104,.25);
+}
+
+.gray{
+  color:#a6b5c8;
+
+  background:
+    rgba(166,181,200,.08);
+
+  border:
+    1px solid rgba(166,181,200,.18);
+}
+
+.meta{
   margin-top:10px;
-  padding:9px 10px;
-  border-radius:11px;
-  color:#ffbd67;
-  background:rgba(255,157,50,.07);
-  border:1px solid rgba(255,157,50,.13);
-  font-size:10px;
+
+  padding-top:9px;
+
+  border-top:
+    1px solid rgba(255,255,255,.06);
+
+  color:#8092aa;
+
+  font-size:9px;
+
+  line-height:1.6;
+}
+
+.warning{
+  margin-top:9px;
+
+  padding:9px;
+
+  border-radius:10px;
+
+  color:#ffc271;
+
+  background:
+    rgba(255,158,61,.07);
+
+  border:
+    1px solid rgba(255,158,61,.13);
+
+  font-size:9px;
+
   line-height:1.45;
 }
+
 .buy{
   display:block;
-  margin-top:11px;
-  padding:12px;
+
+  margin-top:10px;
+
+  padding:11px;
+
   text-align:center;
+
   text-decoration:none;
-  border-radius:12px;
-  color:#00140a;
-  font-size:11px;
+
+  border-radius:11px;
+
+  color:#00130a;
+
+  background:
+    linear-gradient(
+      90deg,
+      #42e992,
+      #80ffb9
+    );
+
+  font-size:10px;
+
   font-weight:1000;
+
   letter-spacing:.4px;
-  background:linear-gradient(90deg,#39e589,#7affb5);
-  box-shadow:0 0 22px rgba(56,232,137,.17);
+
+  box-shadow:
+    0 0 20px rgba(66,245,155,.15);
 }
+
 .empty{
   grid-column:1/-1;
+
+  padding:44px 20px;
+
   text-align:center;
-  padding:52px 20px;
-  border-radius:21px;
-  border:1px dashed rgba(71,158,245,.25);
-  background:rgba(8,15,31,.72);
-  color:#71849f;
+
+  color:#7d91aa;
 }
+
 .radar{
-  width:65px;height:65px;
-  margin:0 auto 15px;
-  border-radius:50%;
+  width:58px;
+  height:58px;
+
+  margin:0 auto 14px;
+
   position:relative;
-  border:1px solid rgba(46,168,255,.4);
-  box-shadow:0 0 25px rgba(46,168,255,.12);
-}
-.radar:before,.radar:after{
-  content:"";
-  position:absolute;
+
   border-radius:50%;
-  border:1px solid rgba(46,168,255,.2);
+
+  border:
+    1px solid rgba(34,169,255,.45);
+
+  box-shadow:
+    0 0 25px rgba(34,169,255,.14);
 }
-.radar:before{inset:10px}
-.radar:after{inset:21px;background:#2ea8ff;box-shadow:0 0 12px #2ea8ff}
-.empty strong{display:block;color:#b9c8db;margin-bottom:7px}
+
+.radar:before{
+  content:"";
+
+  position:absolute;
+
+  inset:10px;
+
+  border-radius:50%;
+
+  border:
+    1px solid rgba(34,169,255,.25);
+}
+
+.radar:after{
+  content:"";
+
+  position:absolute;
+
+  inset:23px;
+
+  border-radius:50%;
+
+  background:#39baff;
+
+  box-shadow:
+    0 0 14px #39baff;
+}
+
+.empty strong{
+  display:block;
+
+  margin-bottom:6px;
+
+  color:#bdd0e5;
+}
+
 .footer{
+  padding:22px 10px;
+
   text-align:center;
-  color:#4e617a;
-  font-size:9px;
+
+  color:#52657c;
+
+  font-size:8px;
+
   letter-spacing:.7px;
-  margin-top:28px;
 }
-@media(max-width:500px){
-  .app{padding:12px 11px 55px}
-  .hero{padding:18px 14px}
-  .title{margin-top:19px}
-  .title h1{font-size:38px}
-  .stats{gap:6px}
-  .stat{padding:13px 4px}
-  .stat strong{font-size:23px}
-  .imageBox{width:91px;height:104px}
+
+@media(max-width:600px){
+
+  body{
+    background-size:auto 620px;
+    background-position:center top;
+    background-attachment:scroll;
+  }
+
+  .app{
+    padding:
+      max(10px,env(safe-area-inset-top))
+      10px
+      50px;
+  }
+
+  .top{
+    min-height:390px;
+  }
+
+  .stats{
+    gap:6px;
+  }
+
+  .stat strong{
+    font-size:22px;
+  }
+
+  .imageBox{
+    width:88px;
+    height:99px;
+  }
 }
 </style>
 </head>
 
 <body>
+
 <div class="app">
 
-<section class="hero">
-  <div class="topline">
-    <div class="brandMini">LEGENDS DEN // LIVE SYSTEM</div>
-    <div class="version">MONITOR v1.0</div>
-  </div>
+  <section class="top">
 
-  <div class="title">
-    <h1>
-      POKÉMON
-      <span>DROP MONITOR</span>
-    </h1>
-    <p>
-      Real-time collector inventory intelligence.
-      Direct-retailer verification before alerts.
-    </p>
-  </div>
+    <div class="liveRow">
 
-  <div class="retailers">
-    <div class="retailer active">⚡ WALMART LIVE</div>
-    <div class="retailer">TARGET // NEXT</div>
-    <div class="retailer">BEST BUY // PLANNED</div>
-  </div>
+      <div class="live" id="connection">
+        <span class="dot"></span>
+        CONNECTING
+      </div>
 
-  <div class="statusRow">
-    <div class="connection" id="connection">
-      <span class="dot"></span>
-      CONNECTING TO SCANNER
+      <button
+        class="alertButton"
+        onclick="enableAlerts()"
+      >
+        🔔 ENABLE iPHONE ALERTS
+      </button>
+
     </div>
 
-    <button class="notify" onclick="enableAlerts()">
-      🔔 ENABLE iPHONE ALERTS
-    </button>
-  </div>
-</section>
+  </section>
 
-<section class="stats">
-  <div class="stat">
-    <strong id="monitored">0</strong>
-    <span>Monitored</span>
-  </div>
-  <div class="stat">
-    <strong id="stock">0</strong>
-    <span>In Stock</span>
-  </div>
-  <div class="stat">
-    <strong id="direct">0</strong>
-    <span>Direct</span>
-  </div>
-</section>
+  <section class="stats">
 
-<div class="sectionHead">
-  <div>
-    <div class="eyebrow">WALMART SCANNER</div>
-    <h2>Live Product Monitoring</h2>
-  </div>
-  <div class="lastScan" id="lastScan">
-    Waiting for scan
-  </div>
-</div>
+    <div class="stat">
+      <strong id="monitored">0</strong>
+      <span>Monitored</span>
+    </div>
 
-<div class="scannerLine"></div>
+    <div class="stat">
+      <strong id="stock">0</strong>
+      <span>In Stock</span>
+    </div>
 
-<main class="grid" id="products">
-  <div class="empty">
-    <div class="radar"></div>
-    <strong>Connecting to scanner...</strong>
-    Establishing backend connection.
+    <div class="stat">
+      <strong id="direct">0</strong>
+      <span>Walmart Direct</span>
+    </div>
+
+  </section>
+
+  <section class="monitor">
+
+    <div class="monitorHeader">
+
+      <div>
+        <div class="label">
+          WALMART SCANNER
+        </div>
+
+        <h2>
+          Live Product Monitoring
+        </h2>
+      </div>
+
+      <div
+        class="lastScan"
+        id="lastScan"
+      >
+        Waiting for scan
+      </div>
+
+    </div>
+
+    <div class="scanLine"></div>
+
+    <main
+      class="grid"
+      id="products"
+    >
+
+      <div class="empty">
+
+        <div class="radar"></div>
+
+        <strong>
+          Connecting to scanner...
+        </strong>
+
+        Establishing backend connection.
+
+      </div>
+
+    </main>
+
+  </section>
+
+  <div class="footer">
+    WALMART DIRECT • MARKETPLACE FILTER • LIVE INVENTORY ENGINE
   </div>
-</main>
-
-<div class="footer">
-  DIRECT RETAILER INVENTORY • MARKETPLACE FILTER • LIVE BACKEND
-</div>
 
 </div>
 
 <script>
-const API="https://pokemon-live-backend.onrender.com";
 
-const esc=v=>String(v??"")
-.replaceAll("&","&amp;")
-.replaceAll("<","&lt;")
-.replaceAll(">","&gt;")
-.replaceAll('"',"&quot;")
-.replaceAll("'","&#039;");
+const API =
+  "https://pokemon-live-backend.onrender.com";
 
-function money(v){
-  const n=Number(v);
-  if(!Number.isFinite(n)) return "—";
-  return new Intl.NumberFormat("en-US",{
-    style:"currency",
-    currency:"USD"
-  }).format(n);
+function esc(v){
+
+  return String(v ?? "")
+
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
-function getStatus(x){
-  if(x.inStock===true&&x.directSeller===true)
-    return["WALMART IN STOCK","green"];
+function money(v){
 
-  if(x.marketplaceOnly===true)
-    return["MARKETPLACE ONLY","orange"];
+  const n =
+    Number(v);
 
   if(
-    x.discoveryMode===true||
-    x.error==="No validated Walmart-direct result found"||
-    x.error==="No Walmart-sold result found"
-  )
-    return["NO DIRECT MATCH","gray"];
+    !Number.isFinite(n)
+  ){
+    return "—";
+  }
 
-  return["OUT OF STOCK","red"];
+  return new Intl.NumberFormat(
+    "en-US",
+    {
+      style:"currency",
+      currency:"USD"
+    }
+  ).format(n);
+}
+
+function status(x){
+
+  if(
+    x.inStock === true &&
+    x.directSeller === true
+  ){
+    return [
+      "WALMART IN STOCK",
+      "green"
+    ];
+  }
+
+  if(
+    x.marketplaceOnly === true
+  ){
+    return [
+      "MARKETPLACE ONLY",
+      "orange"
+    ];
+  }
+
+  if(
+    x.discoveryMode === true ||
+    x.error ===
+      "No validated Walmart-direct result found" ||
+    x.error ===
+      "No Walmart-sold result found"
+  ){
+    return [
+      "NO DIRECT MATCH",
+      "gray"
+    ];
+  }
+
+  return [
+    "OUT OF STOCK",
+    "red"
+  ];
 }
 
 function render(items){
-  const root=document.getElementById("products");
 
-  const direct=items.filter(x=>x.directSeller===true);
-  const stock=items.filter(
-    x=>x.directSeller===true&&x.inStock===true
-  );
+  const root =
+    document.getElementById(
+      "products"
+    );
 
-  document.getElementById("monitored").textContent=items.length;
-  document.getElementById("stock").textContent=stock.length;
-  document.getElementById("direct").textContent=direct.length;
+  const direct =
+    items.filter(
+      x =>
+        x.directSeller === true
+    );
 
-  if(!items.length){
-    root.innerHTML=`
-      <div class="empty">
-        <div class="radar"></div>
-        <strong>No scanner results yet</strong>
-        Backend connected. Waiting for the next inventory scan.
-      </div>`;
-    return;
-  }
+  const stock =
+    items.filter(
+      x =>
+        x.directSeller === true &&
+        x.inStock === true
+    );
 
-  root.innerHTML=items.map(x=>{
-    const [status,statusClass]=getStatus(x);
+  document.getElementById(
+    "monitored"
+  ).textContent =
+    items.length;
 
-    const cardClass=
-      x.inStock===true&&x.directSeller===true
-        ?"stockCard"
-        :x.marketplaceOnly===true
-          ?"marketCard":"";
-
-    const image=x.image
-      ?`<img src="${esc(x.image)}" alt="">`
-      :`<div class="placeholder">⚡</div>`;
-
-    const warning=x.marketplaceOnly===true
-      ?`<div class="warning">
-          ⚠ Third-party marketplace offer detected.
-          This is not Walmart-direct inventory,
-          so no stock alert will fire.
-        </div>`
-      :"";
-
-    const buy=
-      x.url&&
-      x.directSeller===true&&
-      x.inStock===true
-      ?`<a class="buy"
-           href="${esc(x.url)}"
-           target="_blank"
-           rel="noopener">
-           ⚡ OPEN WALMART NOW
-        </a>`
-      :"";
-
-    return`
-      <article class="card ${cardClass}">
-        <div class="cardTop">
-          <div class="imageBox">${image}</div>
-
-          <div class="info">
-            <div class="set">
-              ${esc(x.set||"POKÉMON TCG")}
-            </div>
-
-            <div class="name">
-              ${esc(x.name||"Pokémon Product")}
-            </div>
-
-            <div class="price">
-              ${money(x.price)}
-            </div>
-
-            <div class="badge ${statusClass}">
-              ${status}
-            </div>
-          </div>
-        </div>
-
-        <div class="meta">
-          RETAILER: ${esc((x.retailer||"unknown").toUpperCase())}<br>
-          SELLER: ${esc(x.seller||"Not available")}
-          ${x.sellerType
-            ?`<br>SELLER TYPE: ${esc(x.sellerType)}`
-            :""}
-          ${x.checkedAt
-            ?`<br>CHECKED: ${new Date(x.checkedAt).toLocaleString()}`
-            :""}
-        </div>
-
-        ${warning}
-        ${buy}
-      </article>`;
-  }).join("");
-}
-
-async function load(){
-  const connection=document.getElementById("connection");
-
-  try{
-    const response=await fetch(`${API}/api/status`,{
-      cache:"no-store"
-    });
-
-    if(!response.ok)
-      throw new Error(`Backend ${response.status}`);
-
-    const data=await response.json();
-    const items=Array.isArray(data.items)?data.items:[];
-
-    connection.innerHTML=
-      `<span class="dot"></span> LIVE MONITOR CONNECTED`;
-    connection.style.color="var(--green)";
-
-    render(items);
-
-    document.getElementById("lastScan").textContent=
-      data.lastRun
-        ?`Last scan ${new Date(data.lastRun).toLocaleTimeString()}`
-        :"Backend connected • waiting for scan";
-
-  }catch(err){
-    connection.innerHTML=
-      `<span class="dot"></span> BACKEND OFFLINE`;
-    connection.style.color="var(--red)";
-
-    document.getElementById("products").innerHTML=`
-      <div class="empty">
-        <div class="radar"></div>
-        <strong>Scanner connection failed</strong>
-        ${esc(err.message)}
-      </div>`;
-  }
-}
-
-async function enableAlerts(){
-  if(!("Notification" in window)){
-    alert("Notifications are not supported in this browser.");
-    return;
-  }
-
-  const permission=await Notification.requestPermission();
-
-  if(permission==="granted"){
-    new Notification("Pokémon Drop Monitor",{
-      body:"⚡ Device alerts enabled."
-    });
-  }
-}
-
-load();
-setInterval(load,30000);
-</script>
-</body>
-</html>
+  document.getElementById(
+    "stock"
+  ).textContent =
+    stock
