@@ -17,7 +17,6 @@
   --red:#ff5969;
   --text:#f7fbff;
   --muted:#8da4bf;
-  --glass:rgba(3,12,27,.82);
 }
 
 html,body{
@@ -30,10 +29,10 @@ html,body{
 
 body{
   min-height:100vh;
-  background-color:#020713;
 }
 
-/* REAL BACKGROUND */
+/* BACKGROUND */
+
 .wallpaper{
   position:fixed;
   inset:0;
@@ -54,7 +53,6 @@ body{
   background-size:cover;
 }
 
-/* Makes portrait artwork fit correctly on phones */
 @media (orientation:portrait){
   .wallpaper{
     background-size:100% auto;
@@ -62,13 +60,14 @@ body{
   }
 }
 
-/* Landscape gets a full-screen crop */
 @media (orientation:landscape){
   .wallpaper{
     background-size:cover;
     background-position:center 35%;
   }
 }
+
+/* APP */
 
 .app{
   position:relative;
@@ -83,7 +82,8 @@ body{
     max(50px,env(safe-area-inset-bottom));
 }
 
-/* SPACE FOR THE ART */
+/* HERO */
+
 .heroSpace{
   min-height:64vh;
 
@@ -96,16 +96,21 @@ body{
 }
 
 .controls{
+  position:relative;
+  z-index:20;
+
   width:100%;
+
   display:flex;
   justify-content:center;
   flex-wrap:wrap;
+
   gap:8px;
 }
 
 .live,
 .alertBtn{
-  min-height:40px;
+  min-height:44px;
 
   padding:10px 14px;
 
@@ -119,6 +124,8 @@ body{
   letter-spacing:.5px;
 }
 
+/* CONNECTION */
+
 .live{
   display:flex;
   align-items:center;
@@ -126,7 +133,7 @@ body{
 
   color:var(--green);
 
-  background:rgba(0,20,25,.75);
+  background:rgba(0,20,25,.78);
 
   border:1px solid rgba(67,243,154,.42);
 
@@ -154,14 +161,21 @@ body{
   }
 }
 
+/* ALERT BUTTON */
+
 .alertBtn{
+  position:relative;
+  z-index:30;
+
   appearance:none;
+  -webkit-appearance:none;
 
   cursor:pointer;
+  touch-action:manipulation;
 
   color:#c3e8ff;
 
-  background:rgba(4,25,48,.78);
+  background:rgba(4,25,48,.86);
 
   border:1px solid rgba(32,170,255,.4);
 
@@ -169,7 +183,32 @@ body{
     0 0 22px rgba(32,170,255,.1);
 }
 
-/* COUNTERS */
+.alertBtn:active{
+  transform:scale(.96);
+}
+
+.alertBtn.enabled{
+  color:#5bf5aa;
+
+  border-color:
+    rgba(67,243,154,.55);
+
+  background:
+    rgba(0,40,27,.88);
+}
+
+.alertBtn.blocked{
+  color:#ffb2ba;
+
+  border-color:
+    rgba(255,89,105,.5);
+
+  background:
+    rgba(50,5,10,.85);
+}
+
+/* STATS */
+
 .stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -193,7 +232,8 @@ body{
       rgba(2,9,20,.91)
     );
 
-  border:1px solid rgba(45,171,255,.28);
+  border:
+    1px solid rgba(45,171,255,.28);
 
   backdrop-filter:blur(17px);
   -webkit-backdrop-filter:blur(17px);
@@ -229,7 +269,8 @@ body{
   text-transform:uppercase;
 }
 
-/* MAIN LIVE PANEL */
+/* MONITOR */
+
 .monitor{
   overflow:hidden;
 
@@ -290,12 +331,15 @@ body{
   text-align:right;
 }
 
+/* SCANNER ANIMATION */
+
 .scanLine{
   height:2px;
 
   overflow:hidden;
 
-  background:rgba(255,255,255,.04);
+  background:
+    rgba(255,255,255,.04);
 }
 
 .scanLine:after{
@@ -330,12 +374,16 @@ body{
   }
 }
 
-/* PRODUCTS */
+/* PRODUCT GRID */
+
 .grid{
   display:grid;
 
   grid-template-columns:
-    repeat(auto-fit,minmax(270px,1fr));
+    repeat(
+      auto-fit,
+      minmax(270px,1fr)
+    );
 
   gap:10px;
 
@@ -386,7 +434,8 @@ body{
 
   border-radius:12px;
 
-  background:rgba(255,255,255,.05);
+  background:
+    rgba(255,255,255,.05);
 
   border:
     1px solid rgba(255,255,255,.08);
@@ -462,26 +511,42 @@ body{
 
 .green{
   color:#5bf5aa;
-  background:rgba(67,243,154,.10);
-  border:1px solid rgba(67,243,154,.3);
+
+  background:
+    rgba(67,243,154,.10);
+
+  border:
+    1px solid rgba(67,243,154,.3);
 }
 
 .orange{
   color:#ffc16f;
-  background:rgba(255,157,61,.10);
-  border:1px solid rgba(255,157,61,.3);
+
+  background:
+    rgba(255,157,61,.10);
+
+  border:
+    1px solid rgba(255,157,61,.3);
 }
 
 .red{
   color:#ff7b89;
-  background:rgba(255,89,105,.10);
-  border:1px solid rgba(255,89,105,.25);
+
+  background:
+    rgba(255,89,105,.10);
+
+  border:
+    1px solid rgba(255,89,105,.25);
 }
 
 .gray{
   color:#a7b6c9;
-  background:rgba(167,182,201,.08);
-  border:1px solid rgba(167,182,201,.18);
+
+  background:
+    rgba(167,182,201,.08);
+
+  border:
+    1px solid rgba(167,182,201,.18);
 }
 
 .meta{
@@ -549,7 +614,8 @@ body{
     0 0 20px rgba(67,243,154,.15);
 }
 
-/* EMPTY SCANNER */
+/* EMPTY STATE */
+
 .empty{
   grid-column:1/-1;
 
@@ -613,6 +679,8 @@ body{
   color:#bfd2e6;
 }
 
+/* FOOTER */
+
 .footer{
   padding:19px 8px;
 
@@ -625,10 +693,9 @@ body{
   letter-spacing:.7px;
 }
 
-/* PHONE PORTRAIT */
-@media(
-  orientation:portrait
-){
+/* PORTRAIT */
+
+@media (orientation:portrait){
 
   .heroSpace{
     min-height:63vh;
@@ -636,9 +703,8 @@ body{
 }
 
 /* LANDSCAPE */
-@media(
-  orientation:landscape
-){
+
+@media (orientation:landscape){
 
   .app{
     width:min(1200px,96%);
@@ -650,15 +716,18 @@ body{
 
   .stats{
     width:min(720px,100%);
+
     margin-left:auto;
     margin-right:auto;
   }
 
   .monitor{
     width:min(1000px,100%);
+
     margin:auto;
   }
 }
+
 </style>
 </head>
 
@@ -681,8 +750,9 @@ body{
       </div>
 
       <button
+        id="alertButton"
         class="alertBtn"
-        onclick="enableAlerts()"
+        type="button"
       >
         🔔 ENABLE iPHONE ALERTS
       </button>
@@ -694,6 +764,7 @@ body{
   <section class="stats">
 
     <div class="stat">
+
       <strong id="monitored">
         18
       </strong>
@@ -701,9 +772,11 @@ body{
       <span>
         Monitored Products
       </span>
+
     </div>
 
     <div class="stat">
+
       <strong id="stock">
         0
       </strong>
@@ -711,9 +784,11 @@ body{
       <span>
         In Stock Now
       </span>
+
     </div>
 
     <div class="stat">
+
       <strong id="direct">
         0
       </strong>
@@ -721,6 +796,7 @@ body{
       <span>
         Walmart Direct
       </span>
+
     </div>
 
   </section>
@@ -774,7 +850,12 @@ body{
   </section>
 
   <div class="footer">
-    POKÉMON RESTOCKS • WALMART DIRECT • MARKETPLACE FILTER • LIVE INVENTORY
+
+    POKÉMON RESTOCKS •
+    WALMART DIRECT •
+    MARKETPLACE FILTER •
+    LIVE INVENTORY
+
   </div>
 
 </div>
@@ -782,14 +863,22 @@ body{
 <script>
 
 const API =
-"https://pokemon-live-backend.onrender.com";
+  "https://pokemon-live-backend.onrender.com";
+
+const alertButton =
+  document.getElementById(
+    "alertButton"
+  );
+
+/* =========================
+   HELPERS
+========================= */
 
 function esc(value){
 
   return String(
     value ?? ""
   )
-
   .replaceAll("&","&amp;")
   .replaceAll("<","&lt;")
   .replaceAll(">","&gt;")
@@ -816,6 +905,10 @@ function money(value){
     }
   ).format(number);
 }
+
+/* =========================
+   PRODUCT STATUS
+========================= */
 
 function getStatus(item){
 
@@ -856,6 +949,10 @@ function getStatus(item){
     "red"
   ];
 }
+
+/* =========================
+   RENDER PRODUCTS
+========================= */
 
 function render(items){
 
@@ -929,6 +1026,7 @@ function render(items){
           getStatus(item);
 
         const cardClass =
+
           item.inStock === true &&
           item.directSeller === true
 
@@ -941,6 +1039,7 @@ function render(items){
               : "";
 
         const image =
+
           item.image
 
             ? `
@@ -959,6 +1058,7 @@ function render(items){
             `;
 
         const warning =
+
           item.marketplaceOnly === true
 
             ? `
@@ -974,6 +1074,7 @@ function render(items){
             : "";
 
         const buy =
+
           item.url &&
           item.directSeller === true &&
           item.inStock === true
@@ -1007,23 +1108,29 @@ function render(items){
               <div class="info">
 
                 <div class="set">
+
                   ${esc(
                     item.set ||
                     "POKÉMON TCG"
                   )}
+
                 </div>
 
                 <div class="name">
+
                   ${esc(
                     item.name ||
                     "Pokémon Product"
                   )}
+
                 </div>
 
                 <div class="price">
+
                   ${money(
                     item.price
                   )}
+
                 </div>
 
                 <div
@@ -1059,7 +1166,9 @@ function render(items){
 
                   ? `
                     <br>
+
                     SELLER TYPE:
+
                     ${esc(
                       item.sellerType
                     )}
@@ -1073,8 +1182,334 @@ function render(items){
 
                   ? `
                     <br>
+
                     CHECKED:
+
                     ${
                       new Date(
                         item.checkedAt
-                      ).
+                      ).toLocaleString()
+                    }
+                  `
+
+                  : ""
+              }
+
+            </div>
+
+            ${warning}
+
+            ${buy}
+
+          </article>
+        `;
+      }
+    ).join("");
+}
+
+/* =========================
+   BACKEND CONNECTION
+========================= */
+
+async function load(){
+
+  const connection =
+    document.getElementById(
+      "connection"
+    );
+
+  try{
+
+    const response =
+      await fetch(
+        `${API}/api/status`,
+        {
+          cache:"no-store"
+        }
+      );
+
+    if(
+      !response.ok
+    ){
+      throw new Error(
+        `Backend ${response.status}`
+      );
+    }
+
+    const data =
+      await response.json();
+
+    const items =
+      Array.isArray(
+        data.items
+      )
+        ? data.items
+        : [];
+
+    connection.innerHTML = `
+      <span class="dot"></span>
+      LIVE MONITOR CONNECTED
+    `;
+
+    connection.style.color =
+      "var(--green)";
+
+    render(items);
+
+    document.getElementById(
+      "lastScan"
+    ).textContent =
+
+      data.lastRun
+
+        ? `Last scan ${
+            new Date(
+              data.lastRun
+            ).toLocaleTimeString()
+          }`
+
+        : "Connected • waiting for scan";
+
+  }
+
+  catch(error){
+
+    connection.innerHTML = `
+      <span class="dot"></span>
+      BACKEND OFFLINE
+    `;
+
+    connection.style.color =
+      "var(--red)";
+
+    document.getElementById(
+      "products"
+    ).innerHTML = `
+      <div class="empty">
+
+        <div class="radar"></div>
+
+        <strong>
+          Scanner connection failed
+        </strong>
+
+        ${esc(
+          error.message
+        )}
+
+      </div>
+    `;
+  }
+}
+
+/* =========================
+   ALERT BUTTON UI
+========================= */
+
+function setAlertButton(
+  text,
+  state = ""
+){
+
+  alertButton.textContent =
+    text;
+
+  alertButton.classList.remove(
+    "enabled",
+    "blocked"
+  );
+
+  if(state){
+
+    alertButton.classList.add(
+      state
+    );
+  }
+}
+
+/* =========================
+   iPHONE ALERT PERMISSION
+========================= */
+
+async function enableAlerts(){
+
+  setAlertButton(
+    "🔔 CHECKING ALERTS..."
+  );
+
+  if(
+    !(
+      "Notification"
+      in window
+    )
+  ){
+
+    setAlertButton(
+      "📱 ADD APP TO HOME SCREEN"
+    );
+
+    alert(
+      "For iPhone notifications, add Pokémon Restock Monitor to your Home Screen. In Safari tap Share → Add to Home Screen. Then open the installed app and press this button again."
+    );
+
+    return;
+  }
+
+  try{
+
+    let permission =
+      Notification.permission;
+
+    if(
+      permission ===
+      "default"
+    ){
+
+      permission =
+        await Notification
+          .requestPermission();
+    }
+
+    if(
+      permission ===
+      "granted"
+    ){
+
+      setAlertButton(
+        "✅ ALERTS ENABLED",
+        "enabled"
+      );
+
+      try{
+
+        new Notification(
+          "Pokémon Restock Monitor",
+          {
+            body:
+              "⚡ Test successful! Pokémon restock alerts are enabled."
+          }
+        );
+
+      }
+
+      catch(error){
+
+        console.log(
+          "Test notification error:",
+          error
+        );
+      }
+
+      return;
+    }
+
+    if(
+      permission ===
+      "denied"
+    ){
+
+      setAlertButton(
+        "⚠️ ALERTS BLOCKED",
+        "blocked"
+      );
+
+      alert(
+        "Notifications are blocked for Pokémon Restock Monitor. Check your iPhone notification settings, then reopen the app."
+      );
+
+      return;
+    }
+
+    setAlertButton(
+      "🔔 ENABLE iPHONE ALERTS"
+    );
+
+  }
+
+  catch(error){
+
+    console.error(
+      "Notification setup failed:",
+      error
+    );
+
+    setAlertButton(
+      "⚠️ ALERT SETUP FAILED",
+      "blocked"
+    );
+
+    alert(
+      "Notification setup could not start. Make sure you are opening the installed Pokémon Restock Monitor from your iPhone Home Screen."
+    );
+  }
+}
+
+/* =========================
+   CLICK HANDLER
+========================= */
+
+alertButton.addEventListener(
+  "click",
+  enableAlerts
+);
+
+/* =========================
+   CURRENT ALERT STATE
+========================= */
+
+function updateAlertButton(){
+
+  if(
+    !(
+      "Notification"
+      in window
+    )
+  ){
+    return;
+  }
+
+  if(
+    Notification.permission ===
+    "granted"
+  ){
+
+    setAlertButton(
+      "✅ ALERTS ENABLED",
+      "enabled"
+    );
+
+  }
+
+  else if(
+    Notification.permission ===
+    "denied"
+  ){
+
+    setAlertButton(
+      "⚠️ ALERTS BLOCKED",
+      "blocked"
+    );
+  }
+}
+
+/* =========================
+   START APP
+========================= */
+
+updateAlertButton();
+
+load();
+
+/* Refresh dashboard data every 30 seconds.
+   This checks our backend status endpoint.
+   It does NOT itself make a Walmart API call. */
+
+setInterval(
+  load,
+  30000
+);
+
+</script>
+
+</body>
+</html>
