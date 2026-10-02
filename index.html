@@ -166,12 +166,7 @@ body{min-height:100vh}
   text-align:center;
   padding:13px 5px;
   border-radius:15px;
-  background:
-    linear-gradient(
-      145deg,
-      rgba(6,22,45,.88),
-      rgba(2,9,20,.91)
-    );
+  background:linear-gradient(145deg,rgba(6,22,45,.88),rgba(2,9,20,.91));
   border:1px solid rgba(45,171,255,.28);
   backdrop-filter:blur(17px);
   -webkit-backdrop-filter:blur(17px);
@@ -198,12 +193,7 @@ body{min-height:100vh}
 .monitor{
   overflow:hidden;
   border-radius:20px;
-  background:
-    linear-gradient(
-      145deg,
-      rgba(5,18,38,.91),
-      rgba(2,8,18,.94)
-    );
+  background:linear-gradient(145deg,rgba(5,18,38,.91),rgba(2,8,18,.94));
   border:1px solid rgba(45,171,255,.35);
   backdrop-filter:blur(19px);
   -webkit-backdrop-filter:blur(19px);
@@ -250,13 +240,7 @@ body{min-height:100vh}
   display:block;
   width:30%;
   height:100%;
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      #35bdff,
-      transparent
-    );
+  background:linear-gradient(90deg,transparent,#35bdff,transparent);
   box-shadow:0 0 15px #35bdff;
   animation:scan 2s linear infinite;
 }
@@ -268,8 +252,7 @@ body{min-height:100vh}
 
 .grid{
   display:grid;
-  grid-template-columns:
-    repeat(auto-fit,minmax(270px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
   gap:10px;
   padding:11px;
 }
@@ -277,22 +260,12 @@ body{min-height:100vh}
 .card{
   padding:12px;
   border-radius:16px;
-  background:
-    linear-gradient(
-      145deg,
-      rgba(11,29,55,.95),
-      rgba(4,11,23,.96)
-    );
+  background:linear-gradient(145deg,rgba(11,29,55,.95),rgba(4,11,23,.96));
   border:1px solid rgba(64,164,234,.20);
 }
 
-.stockCard{
-  border-color:rgba(67,243,154,.45);
-}
-
-.marketCard{
-  border-color:rgba(255,157,61,.34);
-}
+.stockCard{border-color:rgba(67,243,154,.45)}
+.marketCard{border-color:rgba(255,157,61,.34)}
 
 .cardTop{display:flex;gap:11px}
 
@@ -403,12 +376,7 @@ body{min-height:100vh}
   text-decoration:none;
   border-radius:10px;
   color:#00150a;
-  background:
-    linear-gradient(
-      90deg,
-      #42ea94,
-      #80ffba
-    );
+  background:linear-gradient(90deg,#42ea94,#80ffba);
   font-size:10px;
   font-weight:1000;
   box-shadow:0 0 20px rgba(67,243,154,.15);
@@ -590,6 +558,9 @@ body{min-height:100vh}
 const API =
   "https://pokemon-live-backend.onrender.com";
 
+const VAPID_STORAGE_KEY =
+  "pokemon-monitor-vapid-public-key-v1";
+
 const alertButton =
   document.getElementById(
     "alertButton"
@@ -631,7 +602,7 @@ function money(value){
 
 
 /* ========================================
-   PUSH KEY CONVERSION
+   PUSH KEY HELPERS
 ======================================== */
 
 function urlBase64ToUint8Array(
@@ -660,6 +631,69 @@ function urlBase64ToUint8Array(
         character.charCodeAt(0)
     )
   );
+}
+
+
+function arrayBufferToBase64Url(
+  buffer
+){
+
+  if(!buffer){
+    return null;
+  }
+
+  const bytes =
+    new Uint8Array(buffer);
+
+  let binary = "";
+
+  for(
+    let i = 0;
+    i < bytes.byteLength;
+    i++
+  ){
+    binary +=
+      String.fromCharCode(
+        bytes[i]
+      );
+  }
+
+  return window
+    .btoa(binary)
+    .replace(/\+/g,"-")
+    .replace(/\//g,"_")
+    .replace(/=+$/,"");
+}
+
+
+async function getCurrentVapidPublicKey(){
+
+  const response =
+    await fetch(
+      `${API}/api/push/public-key`,
+      {
+        cache:"no-store"
+      }
+    );
+
+  if(!response.ok){
+
+    throw new Error(
+      "Could not retrieve push public key."
+    );
+  }
+
+  const data =
+    await response.json();
+
+  if(!data.publicKey){
+
+    throw new Error(
+      "Push public key is unavailable."
+    );
+  }
+
+  return data.publicKey.trim();
 }
 
 
@@ -1087,21 +1121,30 @@ async function getServiceWorker(){
   await navigator.serviceWorker.register(
     "./sw.js",
     {
-      scope:"./"
+      scope:"./",
+      updateViaCache:"none"
     }
   );
 
-  return navigator.serviceWorker.ready;
+  const registration =
+    await navigator.serviceWorker.ready;
+
+  try{
+    await registration.update();
+  }
+  catch(error){
+    console.log(
+      "Service worker update check skipped:",
+      error
+    );
+  }
+
+  return registration;
 }
 
 
 /* ========================================
-   SAVE EXISTING SUBSCRIPTION
-   TO BACKEND
-
-   This is important because Render
-   may restart and forget its
-   in-memory subscription list.
+   SAVE SUBSCRIPTION TO BACKEND
 ======================================== */
 
 async function saveSubscriptionToBackend(
@@ -1151,7 +1194,96 @@ async function saveSubscriptionToBackend(
 
 
 /* ========================================
-   GET OR CREATE PUSH SUBSCRIPTION
+   REMOVE OLD SUBSCRIPTION FROM BACKEND
+======================================== */
+
+async function removeSubscriptionFromBackend(
+  subscription
+){
+
+  if(
+    !subscription ||
+    !subscription.endpoint
+  ){
+    return;
+  }
+
+  try{
+
+    await fetch(
+      `${API}/api/push/unsubscribe`,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify({
+            endpoint:
+              subscription.endpoint
+          })
+      }
+    );
+
+  }
+  catch(error){
+
+    console.log(
+      "Backend unsubscribe cleanup skipped:",
+      error
+    );
+  }
+}
+
+
+/* ========================================
+   DETERMINE SUBSCRIPTION VAPID KEY
+======================================== */
+
+function getSubscriptionPublicKey(
+  subscription
+){
+
+  try{
+
+    const key =
+      subscription?.options
+        ?.applicationServerKey;
+
+    if(!key){
+      return null;
+    }
+
+    return arrayBufferToBase64Url(
+      key
+    );
+
+  }
+  catch(error){
+
+    console.log(
+      "Could not inspect existing subscription key:",
+      error
+    );
+
+    return null;
+  }
+}
+
+
+/* ========================================
+   GET OR CREATE CURRENT SUBSCRIPTION
+
+   IMPORTANT:
+   Every time this runs, we fetch the
+   backend's CURRENT VAPID public key.
+
+   If the iPhone subscription belongs
+   to an older key, it is removed and
+   recreated automatically.
 ======================================== */
 
 async function getOrCreateSubscription(){
@@ -1159,61 +1291,117 @@ async function getOrCreateSubscription(){
   const registration =
     await getServiceWorker();
 
+  const currentPublicKey =
+    await getCurrentVapidPublicKey();
+
   let subscription =
     await registration
       .pushManager
       .getSubscription();
 
+  const storedPublicKey =
+    localStorage.getItem(
+      VAPID_STORAGE_KEY
+    );
+
+
   if(subscription){
 
-    return subscription;
+    const subscriptionPublicKey =
+      getSubscriptionPublicKey(
+        subscription
+      );
+
+    /*
+      Preferred check:
+      Compare the actual key stored
+      inside PushSubscription.
+    */
+
+    if(
+      subscriptionPublicKey &&
+      subscriptionPublicKey !==
+        currentPublicKey
+    ){
+
+      console.log(
+        "VAPID key changed. Replacing stale push subscription."
+      );
+
+      await removeSubscriptionFromBackend(
+        subscription
+      );
+
+      await subscription.unsubscribe();
+
+      subscription = null;
+    }
+
+
+    /*
+      Fallback for browsers that do
+      not expose applicationServerKey.
+
+      If our stored key differs from
+      the backend key, force a clean
+      subscription.
+    */
+
+    else if(
+      !subscriptionPublicKey &&
+      storedPublicKey !==
+        currentPublicKey
+    ){
+
+      console.log(
+        "Stored VAPID key changed. Replacing push subscription."
+      );
+
+      await removeSubscriptionFromBackend(
+        subscription
+      );
+
+      await subscription.unsubscribe();
+
+      subscription = null;
+    }
   }
 
 
-  /* GET PUBLIC VAPID KEY */
+  /*
+    CREATE NEW SUBSCRIPTION
+    USING CURRENT BACKEND KEY
+  */
 
-  const keyResponse =
-    await fetch(
-      `${API}/api/push/public-key`,
-      {
-        cache:"no-store"
-      }
-    );
+  if(!subscription){
 
-  if(!keyResponse.ok){
+    subscription =
+      await registration
+        .pushManager
+        .subscribe({
+          userVisibleOnly:true,
 
-    throw new Error(
-      "Could not retrieve push public key."
-    );
-  }
+          applicationServerKey:
+            urlBase64ToUint8Array(
+              currentPublicKey
+            )
+        });
 
-  const keyData =
-    await keyResponse.json();
-
-  const publicKey =
-    keyData.publicKey;
-
-  if(!publicKey){
-
-    throw new Error(
-      "Push public key is unavailable."
+    console.log(
+      "Fresh push subscription created using current VAPID key."
     );
   }
 
 
-  /* CREATE NEW PUSH SUBSCRIPTION */
+  /*
+    Remember which VAPID key this
+    installation is synchronized to.
+  */
 
-  subscription =
-    await registration
-      .pushManager
-      .subscribe({
-        userVisibleOnly:true,
-
-        applicationServerKey:
-          urlBase64ToUint8Array(
-            publicKey
-          )
-      });
+  localStorage.setItem(
+    VAPID_STORAGE_KEY,
+    currentPublicKey
+  );
 
   return subscription;
 }
@@ -1342,16 +1530,15 @@ alertButton.addEventListener(
 
 
 /* ========================================
-   RESTORE + RE-REGISTER PUSH
+   RESTORE + REPAIR PUSH
 
-   If the iPhone already has a
-   subscription, opening the Home
-   Screen app automatically sends
-   it back to the backend.
+   This now does MORE than re-send an
+   existing subscription.
 
-   This repairs the mismatch where
-   iPhone says ACTIVE but Render
-   says subscriptions: 0.
+   It verifies the subscription is
+   using the backend's CURRENT VAPID
+   public key and automatically
+   replaces it when necessary.
 ======================================== */
 
 async function restorePushRegistration(){
@@ -1372,7 +1559,6 @@ async function restorePushRegistration(){
         in window
       )
     ){
-
       return;
     }
 
@@ -1401,35 +1587,21 @@ async function restorePushRegistration(){
       return;
     }
 
-    const registration =
-      await getServiceWorker();
-
-    const subscription =
-      await registration
-        .pushManager
-        .getSubscription();
-
-    if(!subscription){
-
-      setAlertButton(
-        "🔔 ENABLE iPHONE ALERTS"
-      );
-
-      return;
-    }
-
+    setAlertButton(
+      "🔔 VERIFYING ALERTS..."
+    );
 
     /*
-      CRITICAL FIX:
+      THIS IS THE IMPORTANT CHANGE.
 
-      Do not merely show ACTIVE.
-      Re-send the existing iPhone
-      subscription to the backend.
+      Instead of blindly trusting the
+      old subscription, this function
+      checks the current VAPID key and
+      replaces a stale subscription.
     */
 
-    setAlertButton(
-      "🔔 SYNCING ALERTS..."
-    );
+    const subscription =
+      await getOrCreateSubscription();
 
     await saveSubscriptionToBackend(
       subscription
@@ -1441,7 +1613,7 @@ async function restorePushRegistration(){
     );
 
     console.log(
-      "Existing push subscription re-synced with backend."
+      "Push subscription verified against current VAPID key and synced."
     );
 
   }
@@ -1465,12 +1637,6 @@ async function restorePushRegistration(){
    START APP
 ======================================== */
 
-/*
-  Dashboard and push recovery run
-  independently. A push failure does
-  not break inventory display.
-*/
-
 load();
 
 restorePushRegistration();
@@ -1479,7 +1645,7 @@ restorePushRegistration();
 /*
   Dashboard refresh only.
 
-  This endpoint reads backend state.
+  /api/status reads backend state.
   It does NOT contact Walmart.
 */
 
@@ -1490,12 +1656,11 @@ setInterval(
 
 
 /*
-  When the installed app returns
-  to the foreground, re-register
-  the existing subscription again.
+  Whenever the installed app returns
+  to the foreground, verify BOTH:
 
-  This makes recovery from a backend
-  restart automatic.
+  1. Backend still knows subscription.
+  2. Subscription uses current VAPID key.
 */
 
 document.addEventListener(
