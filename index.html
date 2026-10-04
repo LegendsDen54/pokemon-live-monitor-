@@ -66,21 +66,17 @@ body{
 }
 
 @media (orientation:portrait){
-
   .wallpaper{
     background-size:100% auto;
     background-position:center top;
   }
-
 }
 
 @media (orientation:landscape){
-
   .wallpaper{
     background-size:cover;
     background-position:center 35%;
   }
-
 }
 
 .app{
@@ -148,10 +144,6 @@ body{
   border:
     1px solid
     rgba(67,243,154,.42);
-
-  box-shadow:
-    0 0 25px
-    rgba(67,243,154,.12);
 }
 
 .dot{
@@ -171,12 +163,10 @@ body{
 }
 
 @keyframes pulse{
-
   50%{
     opacity:.35;
     transform:scale(.75);
   }
-
 }
 
 .alertBtn,
@@ -200,10 +190,6 @@ body{
   border:
     1px solid
     rgba(32,170,255,.4);
-
-  box-shadow:
-    0 0 22px
-    rgba(32,170,255,.1);
 }
 
 .refreshBtn{
@@ -215,10 +201,6 @@ body{
   border:
     1px solid
     rgba(255,157,61,.4);
-
-  box-shadow:
-    0 0 22px
-    rgba(255,157,61,.08);
 }
 
 .alertBtn:active,
@@ -279,25 +261,13 @@ body{
   border:
     1px solid
     rgba(45,171,255,.28);
-
-  backdrop-filter:blur(17px);
-  -webkit-backdrop-filter:blur(17px);
-
-  box-shadow:
-    0 12px 35px
-    rgba(0,0,0,.35);
 }
 
 .stat strong{
   display:block;
 
   font-size:23px;
-
   color:#fff;
-
-  text-shadow:
-    0 0 18px
-    rgba(32,170,255,.4);
 }
 
 .stat span{
@@ -332,14 +302,9 @@ body{
     1px solid
     rgba(45,171,255,.35);
 
-  backdrop-filter:blur(19px);
-  -webkit-backdrop-filter:blur(19px);
-
   box-shadow:
     0 20px 60px
-    rgba(0,0,0,.48),
-    0 0 30px
-    rgba(32,170,255,.06);
+    rgba(0,0,0,.48);
 }
 
 .marketplaceMonitor{
@@ -417,7 +382,6 @@ body{
 
 .marketplaceMonitor
 .scanLine:after{
-
   background:
     linear-gradient(
       90deg,
@@ -432,17 +396,13 @@ body{
 }
 
 @keyframes scan{
-
   from{
-    transform:
-      translateX(-120%);
+    transform:translateX(-120%);
   }
 
   to{
-    transform:
-      translateX(440%);
+    transform:translateX(440%);
   }
-
 }
 
 .grid{
@@ -455,7 +415,6 @@ body{
     );
 
   gap:10px;
-
   padding:11px;
 }
 
@@ -474,6 +433,33 @@ body{
   border:
     1px solid
     rgba(64,164,234,.20);
+
+  cursor:pointer;
+  touch-action:manipulation;
+
+  transition:
+    transform .12s ease,
+    border-color .12s ease,
+    background .12s ease;
+}
+
+.card:active{
+  transform:scale(.985);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(16,40,72,.98),
+      rgba(6,16,31,.98)
+    );
+}
+
+.card:focus{
+  outline:
+    2px solid
+    var(--blue);
+
+  outline-offset:2px;
 }
 
 .stockCard{
@@ -519,7 +505,6 @@ body{
   object-fit:contain;
 
   background:white;
-
   padding:3px;
 }
 
@@ -660,7 +645,6 @@ body{
   display:block;
 
   margin-top:9px;
-
   padding:11px;
 
   text-align:center;
@@ -679,10 +663,6 @@ body{
 
   font-size:10px;
   font-weight:1000;
-
-  box-shadow:
-    0 0 20px
-    rgba(67,243,154,.15);
 }
 
 .marketBuy{
@@ -694,10 +674,28 @@ body{
       #ff9d3d,
       #ffd166
     );
+}
 
-  box-shadow:
-    0 0 20px
-    rgba(255,157,61,.15);
+.searchBuy{
+  color:#00101c;
+
+  background:
+    linear-gradient(
+      90deg,
+      #37b8ff,
+      #8edcff
+    );
+}
+
+.tapHint{
+  margin-top:8px;
+
+  color:#637d9a;
+
+  font-size:8px;
+
+  text-align:center;
+  letter-spacing:.4px;
 }
 
 .empty{
@@ -724,21 +722,6 @@ body{
   border:
     1px solid
     rgba(32,170,255,.45);
-
-  box-shadow:
-    0 0 25px
-    rgba(32,170,255,.14);
-}
-
-.marketplaceMonitor
-.radar{
-
-  border-color:
-    rgba(255,157,61,.45);
-
-  box-shadow:
-    0 0 25px
-    rgba(255,157,61,.14);
 }
 
 .radar:before{
@@ -771,7 +754,6 @@ body{
 
 .marketplaceMonitor
 .radar:after{
-
   background:#ff9d3d;
 
   box-shadow:
@@ -799,24 +781,19 @@ body{
 }
 
 @media(max-width:620px){
-
   .stats{
     grid-template-columns:
       repeat(2,1fr);
   }
-
 }
 
 @media (orientation:portrait){
-
   .heroSpace{
     min-height:63vh;
   }
-
 }
 
 @media (orientation:landscape){
-
   .app{
     width:min(1200px,96%);
   }
@@ -836,11 +813,9 @@ body{
     margin-left:auto;
     margin-right:auto;
   }
-
 }
 
 </style>
-
 </head>
 
 <body>
@@ -857,11 +832,8 @@ body{
       class="live"
       id="connection"
     >
-
       <span class="dot"></span>
-
       CONNECTING
-
     </div>
 
     <button
@@ -888,54 +860,23 @@ body{
 <section class="stats">
 
   <div class="stat">
-
-    <strong id="monitored">
-      18
-    </strong>
-
-    <span>
-      Monitored Products
-    </span>
-
+    <strong id="monitored">18</strong>
+    <span>Monitored Products</span>
   </div>
 
-
   <div class="stat">
-
-    <strong id="stock">
-      0
-    </strong>
-
-    <span>
-      Walmart In Stock
-    </span>
-
+    <strong id="stock">0</strong>
+    <span>Walmart In Stock</span>
   </div>
 
-
   <div class="stat">
-
-    <strong id="direct">
-      0
-    </strong>
-
-    <span>
-      Walmart Direct
-    </span>
-
+    <strong id="direct">0</strong>
+    <span>Walmart Direct</span>
   </div>
 
-
   <div class="stat">
-
-    <strong id="marketCount">
-      0
-    </strong>
-
-    <span>
-      Marketplace Offers
-    </span>
-
+    <strong id="marketCount">0</strong>
+    <span>Marketplace Offers</span>
   </div>
 
 </section>
@@ -1048,7 +989,7 @@ body{
   POKÉMON RESTOCKS •
   WALMART DIRECT ALERTS •
   MARKETPLACE DISPLAY •
-  LIVE INVENTORY
+  TAP PRODUCTS TO OPEN WALMART
 
 </div>
 
@@ -1137,6 +1078,113 @@ function money(value){
       currency:"USD"
     }
   ).format(number);
+}
+
+
+function walmartSearchUrl(item){
+
+  const query =
+    item.name ||
+    item.productName ||
+    "Pokemon TCG";
+
+  return (
+    "https://www.walmart.com/search?q=" +
+    encodeURIComponent(query)
+  );
+}
+
+
+function getOpenUrl(item){
+
+  if(
+    item.url &&
+    String(item.url).startsWith(
+      "https://"
+    )
+  ){
+    return item.url;
+  }
+
+  if(item.walmartItemId){
+
+    return (
+      "https://www.walmart.com/ip/" +
+      encodeURIComponent(
+        item.walmartItemId
+      )
+    );
+  }
+
+  return walmartSearchUrl(
+    item
+  );
+}
+
+
+function openWalmart(item){
+
+  const url =
+    getOpenUrl(item);
+
+  window.location.href =
+    url;
+}
+
+
+function bindCardClicks(){
+
+  document
+    .querySelectorAll(
+      "[data-open-url]"
+    )
+    .forEach(
+      card => {
+
+        const url =
+          card.dataset.openUrl;
+
+        if(!url){
+          return;
+        }
+
+        card.addEventListener(
+          "click",
+          event => {
+
+            if(
+              event.target.closest(
+                "a,button"
+              )
+            ){
+              return;
+            }
+
+            window.location.href =
+              url;
+          }
+        );
+
+
+        card.addEventListener(
+          "keydown",
+          event => {
+
+            if(
+              event.key === "Enter" ||
+              event.key === " "
+            ){
+
+              event.preventDefault();
+
+              window.location.href =
+                url;
+            }
+          }
+        );
+
+      }
+    );
 }
 
 
@@ -1263,7 +1311,7 @@ async function getCurrentVapidPublicKey(){
 
 
 /* ========================================
-   SCANNER PRODUCT STATUS
+   SCANNER STATUS
 ======================================== */
 
 function getStatus(item){
@@ -1311,7 +1359,7 @@ function getStatus(item){
 
 
 /* ========================================
-   RENDER DIRECT SCANNER
+   RENDER SCANNER PRODUCTS
 ======================================== */
 
 function renderScanner(items){
@@ -1384,6 +1432,15 @@ function renderScanner(items){
         ] =
           getStatus(item);
 
+        const url =
+          getOpenUrl(item);
+
+        const hasExactUrl =
+          Boolean(
+            item.url ||
+            item.walmartItemId
+          );
+
         const cardClass =
 
           item.inStock === true &&
@@ -1424,43 +1481,33 @@ function renderScanner(items){
 
             ? `
               <div class="warning">
-
-                ⚠ Marketplace seller detected.
-
-                No Walmart-direct stock
-                alert will fire.
-
+                Marketplace seller detected.
+                This will not trigger a
+                Walmart-direct alert.
               </div>
             `
 
             : "";
 
 
-        const buy =
+        const buttonText =
+          hasExactUrl
 
-          item.url &&
-          item.directSeller === true &&
-          item.inStock === true
+            ? "⚡ OPEN WALMART"
 
-            ? `
-              <a
-                class="buy"
-                href="${esc(
-                  item.url
-                )}"
-                target="_blank"
-                rel="noopener"
-              >
-                ⚡ OPEN WALMART NOW
-              </a>
-            `
-
-            : "";
+            : "🔎 SEARCH WALMART";
 
 
         return `
           <article
             class="card ${cardClass}"
+            data-open-url="${esc(url)}"
+            tabindex="0"
+            role="link"
+            aria-label="Open ${esc(
+              item.name ||
+              "Pokémon product"
+            )} on Walmart"
           >
 
             <div class="cardTop">
@@ -1516,7 +1563,7 @@ function renderScanner(items){
               ${esc(
                 (
                   item.retailer ||
-                  "unknown"
+                  "walmart"
                 ).toUpperCase()
               )}
 
@@ -1527,20 +1574,6 @@ function renderScanner(items){
                 item.seller ||
                 "Not available"
               )}
-
-              ${
-                item.sellerType
-
-                  ? `
-                    <br>
-                    SELLER TYPE:
-                    ${esc(
-                      item.sellerType
-                    )}
-                  `
-
-                  : ""
-              }
 
               ${
                 item.checkedAt
@@ -1560,15 +1593,34 @@ function renderScanner(items){
 
             </div>
 
+
             ${warning}
 
-            ${buy}
+
+            <a
+              class="buy ${
+                hasExactUrl
+                  ? ""
+                  : "searchBuy"
+              }"
+              href="${esc(url)}"
+            >
+              ${buttonText}
+            </a>
+
+
+            <div class="tapHint">
+              TAP CARD TO OPEN WALMART
+            </div>
 
           </article>
         `;
 
       }
     ).join("");
+
+
+  bindCardClicks();
 }
 
 
@@ -1628,9 +1680,8 @@ function renderMarketplace(
           No Marketplace offers found
         </strong>
 
-        The monitor searched Walmart
-        Marketplace but no matching
-        available offers were returned.
+        No matching available offers
+        were returned.
 
       </div>
     `;
@@ -1642,6 +1693,9 @@ function renderMarketplace(
   root.innerHTML =
     cleanItems.map(
       item => {
+
+        const url =
+          getOpenUrl(item);
 
         const image =
 
@@ -1663,29 +1717,16 @@ function renderMarketplace(
             `;
 
 
-        const buy =
-
-          item.url
-
-            ? `
-              <a
-                class="buy marketBuy"
-                href="${esc(
-                  item.url
-                )}"
-                target="_blank"
-                rel="noopener"
-              >
-                🛒 OPEN WALMART
-              </a>
-            `
-
-            : "";
-
-
         return `
           <article
             class="card marketCard"
+            data-open-url="${esc(url)}"
+            tabindex="0"
+            role="link"
+            aria-label="Open ${esc(
+              item.name ||
+              "Marketplace product"
+            )} on Walmart"
           >
 
             <div class="cardTop">
@@ -1693,7 +1734,6 @@ function renderMarketplace(
               <div class="imageBox">
                 ${image}
               </div>
-
 
               <div class="info">
 
@@ -1706,7 +1746,6 @@ function renderMarketplace(
 
                 </div>
 
-
                 <div class="name">
 
                   ${esc(
@@ -1716,7 +1755,6 @@ function renderMarketplace(
 
                 </div>
 
-
                 <div class="price">
 
                   ${money(
@@ -1725,13 +1763,10 @@ function renderMarketplace(
 
                 </div>
 
-
                 <div
                   class="badge orange"
                 >
-
                   MARKETPLACE
-
                 </div>
 
               </div>
@@ -1760,7 +1795,6 @@ function renderMarketplace(
 
                   ? `
                     <br>
-
                     CHECKED:
                     ${
                       new Date(
@@ -1778,28 +1812,37 @@ function renderMarketplace(
             <div class="warning">
 
               Marketplace listing.
-
-              This offer is displayed
-              for comparison only and
-              does not trigger your
-              Walmart-direct restock
-              notification.
+              No Walmart-direct stock
+              notification will fire.
 
             </div>
 
 
-            ${buy}
+            <a
+              class="buy marketBuy"
+              href="${esc(url)}"
+            >
+              🛒 OPEN WALMART
+            </a>
+
+
+            <div class="tapHint">
+              TAP CARD TO OPEN LISTING
+            </div>
 
           </article>
         `;
 
       }
     ).join("");
+
+
+  bindCardClicks();
 }
 
 
 /* ========================================
-   BACKEND SCANNER CONNECTION
+   BACKEND SCANNER
 ======================================== */
 
 async function loadScanner(){
@@ -1905,7 +1948,7 @@ async function loadScanner(){
 
 
 /* ========================================
-   LIVE MARKETPLACE SEARCH
+   MARKETPLACE SEARCH
 ======================================== */
 
 async function loadMarketplace(
@@ -2008,7 +2051,6 @@ async function loadMarketplace(
         ).toLocaleTimeString()
       }`;
 
-
   }
 
   catch(error){
@@ -2058,10 +2100,6 @@ async function loadMarketplace(
   }
 }
 
-
-/* ========================================
-   MARKETPLACE REFRESH BUTTON
-======================================== */
 
 marketRefreshButton
   .addEventListener(
@@ -2161,7 +2199,7 @@ async function getServiceWorker(){
 
 
 /* ========================================
-   SAVE SUBSCRIPTION TO BACKEND
+   PUSH BACKEND SYNC
 ======================================== */
 
 async function saveSubscriptionToBackend(
@@ -2216,10 +2254,6 @@ async function saveSubscriptionToBackend(
 }
 
 
-/* ========================================
-   REMOVE OLD SUBSCRIPTION
-======================================== */
-
 async function removeSubscriptionFromBackend(
   subscription
 ){
@@ -2265,7 +2299,7 @@ async function removeSubscriptionFromBackend(
 
 
 /* ========================================
-   SUBSCRIPTION VAPID KEY
+   VAPID SUBSCRIPTION CHECK
 ======================================== */
 
 function getSubscriptionPublicKey(
@@ -2304,10 +2338,6 @@ function getSubscriptionPublicKey(
 }
 
 
-/* ========================================
-   GET OR CREATE PUSH SUBSCRIPTION
-======================================== */
-
 async function getOrCreateSubscription(){
 
   const registration =
@@ -2344,11 +2374,6 @@ async function getOrCreateSubscription(){
         currentPublicKey
     ){
 
-      console.log(
-        "VAPID key changed. Replacing stale push subscription."
-      );
-
-
       await removeSubscriptionFromBackend(
         subscription
       );
@@ -2368,11 +2393,6 @@ async function getOrCreateSubscription(){
       storedPublicKey !==
         currentPublicKey
     ){
-
-      console.log(
-        "Stored VAPID key changed. Replacing push subscription."
-      );
-
 
       await removeSubscriptionFromBackend(
         subscription
@@ -2404,11 +2424,6 @@ async function getOrCreateSubscription(){
             )
 
         });
-
-
-    console.log(
-      "Fresh push subscription created using current VAPID key."
-    );
   }
 
 
@@ -2423,7 +2438,7 @@ async function getOrCreateSubscription(){
 
 
 /* ========================================
-   ENABLE WEB PUSH
+   ENABLE PUSH
 ======================================== */
 
 async function enableAlerts(){
@@ -2524,11 +2539,6 @@ async function enableAlerts(){
       "enabled"
     );
 
-
-    console.log(
-      "Push subscription active and registered with backend."
-    );
-
   }
 
   catch(error){
@@ -2552,10 +2562,6 @@ async function enableAlerts(){
 }
 
 
-/* ========================================
-   ALERT BUTTON
-======================================== */
-
 alertButton
   .addEventListener(
     "click",
@@ -2564,7 +2570,7 @@ alertButton
 
 
 /* ========================================
-   RESTORE PUSH REGISTRATION
+   RESTORE PUSH
 ======================================== */
 
 async function restorePushRegistration(){
@@ -2599,7 +2605,6 @@ async function restorePushRegistration(){
         "blocked"
       );
 
-
       return;
     }
 
@@ -2612,7 +2617,6 @@ async function restorePushRegistration(){
       setAlertButton(
         "🔔 ENABLE iPHONE ALERTS"
       );
-
 
       return;
     }
@@ -2635,11 +2639,6 @@ async function restorePushRegistration(){
     setAlertButton(
       "✅ PUSH ALERTS ACTIVE",
       "enabled"
-    );
-
-
-    console.log(
-      "Push subscription verified and synced."
     );
 
   }
@@ -2671,28 +2670,11 @@ loadMarketplace();
 restorePushRegistration();
 
 
-/*
-  Direct scanner dashboard refresh.
-
-  This reads backend state only.
-  It does not perform a new
-  Marketplace search.
-*/
-
 setInterval(
   loadScanner,
   DASHBOARD_REFRESH_MS
 );
 
-
-/*
-  Marketplace searches are intentionally
-  slower because each refresh performs
-  live Walmart searches across the
-  monitored catalog.
-
-  Manual refresh is always available.
-*/
 
 setInterval(
   () => {
@@ -2703,10 +2685,6 @@ setInterval(
   MARKETPLACE_REFRESH_MS
 );
 
-
-/* ========================================
-   APP RETURNS TO FOREGROUND
-======================================== */
 
 document.addEventListener(
   "visibilitychange",
