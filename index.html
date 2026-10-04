@@ -43,6 +43,7 @@ body{
 
 body{
   min-height:100vh;
+  overscroll-behavior-y:contain;
 }
 
 .wallpaper{
@@ -72,11 +73,63 @@ body{
   }
 }
 
-@media (orientation:landscape){
-  .wallpaper{
-    background-size:cover;
-    background-position:center 35%;
-  }
+.pullRefresh{
+  position:fixed;
+  z-index:9999;
+  top:max(12px,env(safe-area-inset-top));
+  left:50%;
+  transform:translate(-50%,-90px);
+
+  min-width:175px;
+  padding:11px 15px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  border-radius:999px;
+
+  background:rgba(4,20,40,.95);
+  border:1px solid rgba(32,170,255,.45);
+
+  color:#cbeeff;
+
+  font-size:10px;
+  font-weight:950;
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:
+    transform .15s ease,
+    opacity .15s ease;
+}
+
+.pullRefresh.visible{
+  opacity:1;
+}
+
+.pullRefresh.ready{
+  color:#5bf5aa;
+  border-color:rgba(67,243,154,.55);
+}
+
+.pullRefresh.refreshing{
+  color:#ffd84c;
+  border-color:rgba(255,216,76,.55);
+}
+
+.pullArrow{
+  font-size:17px;
+  transition:transform .15s ease;
+}
+
+.pullRefresh.ready .pullArrow{
+  transform:rotate(180deg);
 }
 
 .app{
@@ -104,9 +157,6 @@ body{
 }
 
 .controls{
-  position:relative;
-  z-index:20;
-
   width:100%;
 
   display:flex;
@@ -124,12 +174,12 @@ body{
 
   border-radius:999px;
 
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-
   font-size:10px;
   font-weight:950;
   letter-spacing:.5px;
+
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
 }
 
 .live{
@@ -140,10 +190,7 @@ body{
   color:var(--green);
 
   background:rgba(0,20,25,.78);
-
-  border:
-    1px solid
-    rgba(67,243,154,.42);
+  border:1px solid rgba(67,243,154,.42);
 }
 
 .dot{
@@ -151,15 +198,11 @@ body{
   height:8px;
 
   border-radius:50%;
-
   background:currentColor;
 
-  box-shadow:
-    0 0 12px
-    currentColor;
+  box-shadow:0 0 12px currentColor;
 
-  animation:
-    pulse 1.5s infinite;
+  animation:pulse 1.5s infinite;
 }
 
 @keyframes pulse{
@@ -171,9 +214,6 @@ body{
 
 .alertBtn,
 .refreshBtn{
-  position:relative;
-  z-index:30;
-
   appearance:none;
   -webkit-appearance:none;
 
@@ -183,64 +223,87 @@ body{
 
 .alertBtn{
   color:#c3e8ff;
-
-  background:
-    rgba(4,25,48,.86);
-
-  border:
-    1px solid
-    rgba(32,170,255,.4);
+  background:rgba(4,25,48,.86);
+  border:1px solid rgba(32,170,255,.4);
 }
 
 .refreshBtn{
   color:#ffd29d;
-
-  background:
-    rgba(53,26,3,.86);
-
-  border:
-    1px solid
-    rgba(255,157,61,.4);
-}
-
-.alertBtn:active,
-.refreshBtn:active{
-  transform:scale(.96);
+  background:rgba(53,26,3,.86);
+  border:1px solid rgba(255,157,61,.4);
 }
 
 .alertBtn.enabled{
   color:#5bf5aa;
-
-  border-color:
-    rgba(67,243,154,.55);
-
-  background:
-    rgba(0,40,27,.88);
+  border-color:rgba(67,243,154,.55);
+  background:rgba(0,40,27,.88);
 }
 
 .alertBtn.blocked{
   color:#ffb2ba;
-
-  border-color:
-    rgba(255,89,105,.5);
-
-  background:
-    rgba(50,5,10,.85);
+  border-color:rgba(255,89,105,.5);
+  background:rgba(50,5,10,.85);
 }
 
 .refreshBtn.loading{
-  opacity:.6;
+  opacity:.55;
   pointer-events:none;
+}
+
+.countdowns{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.countdown{
+  padding:11px;
+  text-align:center;
+
+  border-radius:14px;
+
+  background:rgba(4,17,34,.88);
+  border:1px solid rgba(32,170,255,.25);
+}
+
+.countdown.market{
+  border-color:rgba(255,157,61,.3);
+}
+
+.countdown span{
+  display:block;
+
+  color:#7f98b4;
+
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.7px;
+
+  text-transform:uppercase;
+}
+
+.countdown strong{
+  display:block;
+
+  margin-top:4px;
+
+  color:#72cbff;
+
+  font-size:21px;
+  font-variant-numeric:tabular-nums;
+}
+
+.countdown.market strong{
+  color:#ffc16f;
 }
 
 .stats{
   display:grid;
-
-  grid-template-columns:
-    repeat(4,1fr);
+  grid-template-columns:repeat(4,1fr);
 
   gap:7px;
-
   margin-bottom:10px;
 }
 
@@ -258,14 +321,11 @@ body{
       rgba(2,9,20,.91)
     );
 
-  border:
-    1px solid
-    rgba(45,171,255,.28);
+  border:1px solid rgba(45,171,255,.28);
 }
 
 .stat strong{
   display:block;
-
   font-size:23px;
   color:#fff;
 }
@@ -286,7 +346,6 @@ body{
 
 .monitor{
   overflow:hidden;
-
   margin-bottom:12px;
 
   border-radius:20px;
@@ -298,18 +357,18 @@ body{
       rgba(2,8,18,.94)
     );
 
-  border:
-    1px solid
-    rgba(45,171,255,.35);
+  border:1px solid rgba(45,171,255,.35);
 
   box-shadow:
-    0 20px 60px
-    rgba(0,0,0,.48);
+    0 20px 60px rgba(0,0,0,.48);
 }
 
 .marketplaceMonitor{
-  border-color:
-    rgba(255,157,61,.34);
+  border-color:rgba(255,157,61,.34);
+}
+
+.spotifyMonitor{
+  border-color:rgba(67,243,154,.3);
 }
 
 .monitorHead{
@@ -318,7 +377,6 @@ body{
   justify-content:space-between;
 
   gap:12px;
-
   padding:15px;
 }
 
@@ -332,6 +390,10 @@ body{
 
 .marketplaceTitle{
   color:var(--orange);
+}
+
+.spotifyTitle{
+  color:var(--green);
 }
 
 .monitorHead h2{
@@ -352,8 +414,7 @@ body{
   height:2px;
   overflow:hidden;
 
-  background:
-    rgba(255,255,255,.04);
+  background:rgba(255,255,255,.04);
 }
 
 .scanLine:after{
@@ -372,16 +433,10 @@ body{
       transparent
     );
 
-  box-shadow:
-    0 0 15px
-    #35bdff;
-
-  animation:
-    scan 2s linear infinite;
+  animation:scan 2s linear infinite;
 }
 
-.marketplaceMonitor
-.scanLine:after{
+.marketplaceMonitor .scanLine:after{
   background:
     linear-gradient(
       90deg,
@@ -389,10 +444,16 @@ body{
       #ff9d3d,
       transparent
     );
+}
 
-  box-shadow:
-    0 0 15px
-    #ff9d3d;
+.spotifyMonitor .scanLine:after{
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #43f39a,
+      transparent
+    );
 }
 
 @keyframes scan{
@@ -403,6 +464,44 @@ body{
   to{
     transform:translateX(440%);
   }
+}
+
+.spotifyWrap{
+  padding:12px;
+}
+
+.spotifyFrame{
+  width:100%;
+  height:352px;
+
+  border:0;
+  border-radius:14px;
+
+  overflow:hidden;
+}
+
+.spotifyOpen{
+  display:block;
+
+  margin-top:10px;
+  padding:12px;
+
+  text-align:center;
+  text-decoration:none;
+
+  border-radius:12px;
+
+  color:#00130a;
+
+  background:
+    linear-gradient(
+      90deg,
+      #43f39a,
+      #8cffbf
+    );
+
+  font-size:10px;
+  font-weight:1000;
 }
 
 .grid{
@@ -430,46 +529,27 @@ body{
       rgba(4,11,23,.96)
     );
 
-  border:
-    1px solid
-    rgba(64,164,234,.20);
+  border:1px solid rgba(64,164,234,.20);
 
   cursor:pointer;
   touch-action:manipulation;
-
-  transition:
-    transform .12s ease,
-    border-color .12s ease,
-    background .12s ease;
 }
 
 .card:active{
   transform:scale(.985);
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(16,40,72,.98),
-      rgba(6,16,31,.98)
-    );
 }
 
 .card:focus{
-  outline:
-    2px solid
-    var(--blue);
-
+  outline:2px solid var(--blue);
   outline-offset:2px;
 }
 
 .stockCard{
-  border-color:
-    rgba(67,243,154,.45);
+  border-color:rgba(67,243,154,.45);
 }
 
 .marketCard{
-  border-color:
-    rgba(255,157,61,.34);
+  border-color:rgba(255,157,61,.34);
 }
 
 .cardTop{
@@ -490,12 +570,8 @@ body{
 
   border-radius:12px;
 
-  background:
-    rgba(255,255,255,.05);
-
-  border:
-    1px solid
-    rgba(255,255,255,.08);
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
 }
 
 .imageBox img{
@@ -552,68 +628,43 @@ body{
   display:inline-flex;
 
   margin-top:8px;
-
   padding:6px 8px;
 
   border-radius:999px;
 
   font-size:8px;
   font-weight:1000;
-  letter-spacing:.4px;
 }
 
 .green{
   color:#5bf5aa;
-
-  background:
-    rgba(67,243,154,.10);
-
-  border:
-    1px solid
-    rgba(67,243,154,.3);
+  background:rgba(67,243,154,.10);
+  border:1px solid rgba(67,243,154,.3);
 }
 
 .orange{
   color:#ffc16f;
-
-  background:
-    rgba(255,157,61,.10);
-
-  border:
-    1px solid
-    rgba(255,157,61,.3);
+  background:rgba(255,157,61,.10);
+  border:1px solid rgba(255,157,61,.3);
 }
 
 .red{
   color:#ff7b89;
-
-  background:
-    rgba(255,89,105,.10);
-
-  border:
-    1px solid
-    rgba(255,89,105,.25);
+  background:rgba(255,89,105,.10);
+  border:1px solid rgba(255,89,105,.25);
 }
 
 .gray{
   color:#a7b6c9;
-
-  background:
-    rgba(167,182,201,.08);
-
-  border:
-    1px solid
-    rgba(167,182,201,.18);
+  background:rgba(167,182,201,.08);
+  border:1px solid rgba(167,182,201,.18);
 }
 
 .meta{
   margin-top:9px;
-
   padding-top:8px;
 
-  border-top:
-    1px solid
-    rgba(255,255,255,.06);
+  border-top:1px solid rgba(255,255,255,.06);
 
   color:#8095ae;
 
@@ -623,22 +674,16 @@ body{
 
 .warning{
   margin-top:8px;
-
   padding:8px;
 
   border-radius:9px;
 
   color:#ffc372;
 
-  background:
-    rgba(255,157,61,.07);
-
-  border:
-    1px solid
-    rgba(255,157,61,.14);
+  background:rgba(255,157,61,.07);
+  border:1px solid rgba(255,157,61,.14);
 
   font-size:9px;
-  line-height:1.4;
 }
 
 .buy{
@@ -693,9 +738,7 @@ body{
   color:#637d9a;
 
   font-size:8px;
-
   text-align:center;
-  letter-spacing:.4px;
 }
 
 .empty{
@@ -704,7 +747,6 @@ body{
   padding:40px 20px;
 
   text-align:center;
-
   color:#8197b0;
 }
 
@@ -712,29 +754,13 @@ body{
   width:55px;
   height:55px;
 
-  margin:
-    0 auto 13px;
+  margin:0 auto 13px;
 
   position:relative;
 
   border-radius:50%;
 
-  border:
-    1px solid
-    rgba(32,170,255,.45);
-}
-
-.radar:before{
-  content:"";
-
-  position:absolute;
-  inset:10px;
-
-  border-radius:50%;
-
-  border:
-    1px solid
-    rgba(32,170,255,.25);
+  border:1px solid rgba(32,170,255,.45);
 }
 
 .radar:after{
@@ -746,19 +772,7 @@ body{
   border-radius:50%;
 
   background:#38baff;
-
-  box-shadow:
-    0 0 13px
-    #38baff;
-}
-
-.marketplaceMonitor
-.radar:after{
-  background:#ff9d3d;
-
-  box-shadow:
-    0 0 13px
-    #ff9d3d;
+  box-shadow:0 0 13px #38baff;
 }
 
 .empty strong{
@@ -782,8 +796,7 @@ body{
 
 @media(max-width:620px){
   .stats{
-    grid-template-columns:
-      repeat(2,1fr);
+    grid-template-columns:repeat(2,1fr);
   }
 }
 
@@ -793,32 +806,26 @@ body{
   }
 }
 
-@media (orientation:landscape){
-  .app{
-    width:min(1200px,96%);
-  }
-
-  .heroSpace{
-    min-height:74vh;
-  }
-
-  .stats{
-    width:min(720px,100%);
-    margin-left:auto;
-    margin-right:auto;
-  }
-
-  .monitor{
-    width:min(1000px,100%);
-    margin-left:auto;
-    margin-right:auto;
-  }
-}
-
 </style>
 </head>
 
 <body>
+
+<div
+  id="pullRefresh"
+  class="pullRefresh"
+>
+  <span
+    id="pullArrow"
+    class="pullArrow"
+  >
+    ↓
+  </span>
+
+  <span id="pullText">
+    PULL TO REFRESH
+  </span>
+</div>
 
 <div class="wallpaper"></div>
 
@@ -856,6 +863,29 @@ body{
 
 </section>
 
+<section class="countdowns">
+
+  <div class="countdown">
+    <span>
+      Next Scanner Refresh
+    </span>
+
+    <strong id="scannerCountdown">
+      01:00
+    </strong>
+  </div>
+
+  <div class="countdown market">
+    <span>
+      Marketplace Refresh
+    </span>
+
+    <strong id="marketCountdown">
+      10:00
+    </strong>
+  </div>
+
+</section>
 
 <section class="stats">
 
@@ -881,13 +911,11 @@ body{
 
 </section>
 
-
 <section class="monitor">
 
 <div class="monitorHead">
 
   <div>
-
     <div class="smallTitle">
       POKÉMON RESTOCKS
     </div>
@@ -895,7 +923,6 @@ body{
     <h2>
       Walmart Direct Monitoring
     </h2>
-
   </div>
 
   <div
@@ -913,7 +940,6 @@ body{
   class="grid"
   id="products"
 >
-
   <div class="empty">
 
     <div class="radar"></div>
@@ -925,11 +951,9 @@ body{
     Establishing backend connection.
 
   </div>
-
 </main>
 
 </section>
-
 
 <section
   class="monitor marketplaceMonitor"
@@ -938,7 +962,6 @@ body{
 <div class="monitorHead">
 
   <div>
-
     <div
       class="smallTitle marketplaceTitle"
     >
@@ -948,7 +971,6 @@ body{
     <h2>
       Live Marketplace Offers
     </h2>
-
   </div>
 
   <div
@@ -966,35 +988,77 @@ body{
   class="grid"
   id="marketplaceProducts"
 >
-
   <div class="empty">
 
     <div class="radar"></div>
 
     <strong>
-      Loading Marketplace offers...
+      Loading Marketplace...
     </strong>
 
     Searching available sellers.
 
   </div>
-
 </main>
 
 </section>
 
+<section
+  class="monitor spotifyMonitor"
+>
+
+<div class="monitorHead">
+
+  <div>
+    <div
+      class="smallTitle spotifyTitle"
+    >
+      🎵 SPOTIFY
+    </div>
+
+    <h2>
+      Monitor Playlist
+    </h2>
+  </div>
+
+  <div class="lastScan">
+    TAP PLAY
+  </div>
+
+</div>
+
+<div class="scanLine"></div>
+
+<div class="spotifyWrap">
+
+  <iframe
+    class="spotifyFrame"
+    src="https://open.spotify.com/embed/playlist/18MiIrblH98dgBR6bWGwax?utm_source=generator&theme=0"
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy"
+    title="Spotify Playlist"
+  ></iframe>
+
+  <a
+    class="spotifyOpen"
+    href="https://open.spotify.com/playlist/18MiIrblH98dgBR6bWGwax"
+  >
+    🎵 OPEN PLAYLIST IN SPOTIFY
+  </a>
+
+</div>
+
+</section>
 
 <div class="footer">
-
   POKÉMON RESTOCKS •
-  WALMART DIRECT ALERTS •
-  MARKETPLACE DISPLAY •
-  TAP PRODUCTS TO OPEN WALMART
-
+  WALMART DIRECT •
+  MARKETPLACE •
+  LIVE ALERTS •
+  SPOTIFY
 </div>
 
 </div>
-
 
 <script>
 
@@ -1004,11 +1068,11 @@ const API =
 const VAPID_STORAGE_KEY =
   "pokemon-monitor-vapid-public-key-v1";
 
+const SCANNER_REFRESH_MS =
+  60 * 1000;
+
 const MARKETPLACE_REFRESH_MS =
   10 * 60 * 1000;
-
-const DASHBOARD_REFRESH_MS =
-  30 * 1000;
 
 const alertButton =
   document.getElementById(
@@ -1020,42 +1084,43 @@ const marketRefreshButton =
     "marketRefreshButton"
   );
 
+const pullRefresh =
+  document.getElementById(
+    "pullRefresh"
+  );
+
+const pullText =
+  document.getElementById(
+    "pullText"
+  );
+
 let marketplaceLoading =
   false;
 
-let lastMarketplaceLoad =
-  0;
+let manualRefreshRunning =
+  false;
+
+let nextScannerRefresh =
+  Date.now() +
+  SCANNER_REFRESH_MS;
+
+let nextMarketplaceRefresh =
+  Date.now() +
+  MARKETPLACE_REFRESH_MS;
 
 
-/* ========================================
-   HELPERS
-======================================== */
+/* HELPERS */
 
 function esc(value){
 
   return String(
     value ?? ""
   )
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
 
@@ -1081,27 +1146,12 @@ function money(value){
 }
 
 
-function walmartSearchUrl(item){
-
-  const query =
-    item.name ||
-    item.productName ||
-    "Pokemon TCG";
-
-  return (
-    "https://www.walmart.com/search?q=" +
-    encodeURIComponent(query)
-  );
-}
-
-
 function getOpenUrl(item){
 
   if(
     item.url &&
-    String(item.url).startsWith(
-      "https://"
-    )
+    String(item.url)
+      .startsWith("https://")
   ){
     return item.url;
   }
@@ -1116,19 +1166,14 @@ function getOpenUrl(item){
     );
   }
 
-  return walmartSearchUrl(
-    item
+  const query =
+    item.name ||
+    "Pokemon TCG";
+
+  return (
+    "https://www.walmart.com/search?q=" +
+    encodeURIComponent(query)
   );
-}
-
-
-function openWalmart(item){
-
-  const url =
-    getOpenUrl(item);
-
-  window.location.href =
-    url;
 }
 
 
@@ -1141,12 +1186,15 @@ function bindCardClicks(){
     .forEach(
       card => {
 
-        const url =
-          card.dataset.openUrl;
-
-        if(!url){
+        if(
+          card.dataset.bound ===
+          "true"
+        ){
           return;
         }
+
+        card.dataset.bound =
+          "true";
 
         card.addEventListener(
           "click",
@@ -1160,11 +1208,15 @@ function bindCardClicks(){
               return;
             }
 
-            window.location.href =
-              url;
+            const url =
+              card.dataset.openUrl;
+
+            if(url){
+              window.location.href =
+                url;
+            }
           }
         );
-
 
         card.addEventListener(
           "keydown",
@@ -1177,8 +1229,13 @@ function bindCardClicks(){
 
               event.preventDefault();
 
-              window.location.href =
-                url;
+              const url =
+                card.dataset.openUrl;
+
+              if(url){
+                window.location.href =
+                  url;
+              }
             }
           }
         );
@@ -1188,131 +1245,70 @@ function bindCardClicks(){
 }
 
 
-/* ========================================
-   PUSH KEY HELPERS
-======================================== */
+/* COUNTDOWNS */
 
-function urlBase64ToUint8Array(
-  base64String
+function formatCountdown(
+  milliseconds
 ){
 
-  const padding =
-    "=".repeat(
-      (
-        4 -
-        base64String.length % 4
-      ) % 4
-    );
-
-  const base64 =
-    (
-      base64String +
-      padding
-    )
-      .replace(
-        /-/g,
-        "+"
+  const seconds =
+    Math.max(
+      0,
+      Math.ceil(
+        milliseconds / 1000
       )
-      .replace(
-        /_/g,
-        "/"
-      );
-
-  const rawData =
-    window.atob(
-      base64
     );
 
-  return Uint8Array.from(
-    [...rawData].map(
-      character =>
-        character
-          .charCodeAt(0)
-    )
+  const minutes =
+    Math.floor(
+      seconds / 60
+    );
+
+  const remaining =
+    seconds % 60;
+
+  return (
+    String(minutes)
+      .padStart(2,"0") +
+    ":" +
+    String(remaining)
+      .padStart(2,"0")
   );
 }
 
 
-function arrayBufferToBase64Url(
-  buffer
-){
+function updateCountdowns(){
 
-  if(!buffer){
-    return null;
-  }
+  const now =
+    Date.now();
 
-  const bytes =
-    new Uint8Array(
-      buffer
+  document.getElementById(
+    "scannerCountdown"
+  ).textContent =
+    formatCountdown(
+      nextScannerRefresh -
+      now
     );
 
-  let binary = "";
-
-  for(
-    let i = 0;
-    i < bytes.byteLength;
-    i++
-  ){
-
-    binary +=
-      String.fromCharCode(
-        bytes[i]
-      );
-  }
-
-  return window
-    .btoa(binary)
-    .replace(
-      /\+/g,
-      "-"
-    )
-    .replace(
-      /\//g,
-      "_"
-    )
-    .replace(
-      /=+$/,
-      ""
+  document.getElementById(
+    "marketCountdown"
+  ).textContent =
+    formatCountdown(
+      nextMarketplaceRefresh -
+      now
     );
 }
 
 
-async function getCurrentVapidPublicKey(){
+setInterval(
+  updateCountdowns,
+  1000
+);
 
-  const response =
-    await fetch(
-      `${API}/api/push/public-key`,
-      {
-        cache:"no-store"
-      }
-    );
-
-  if(!response.ok){
-
-    throw new Error(
-      "Could not retrieve push public key."
-    );
-  }
-
-  const data =
-    await response.json();
-
-  if(!data.publicKey){
-
-    throw new Error(
-      "Push public key is unavailable."
-    );
-  }
-
-  return data
-    .publicKey
-    .trim();
-}
+updateCountdowns();
 
 
-/* ========================================
-   SCANNER STATUS
-======================================== */
+/* PRODUCT STATUS */
 
 function getStatus(item){
 
@@ -1320,7 +1316,6 @@ function getStatus(item){
     item.inStock === true &&
     item.directSeller === true
   ){
-
     return [
       "WALMART IN STOCK",
       "green"
@@ -1330,7 +1325,6 @@ function getStatus(item){
   if(
     item.marketplaceOnly === true
   ){
-
     return [
       "MARKETPLACE ONLY",
       "orange"
@@ -1338,13 +1332,8 @@ function getStatus(item){
   }
 
   if(
-    item.discoveryMode === true ||
-    item.error ===
-      "No validated Walmart-direct result found" ||
-    item.error ===
-      "No Walmart-sold result found"
+    item.discoveryMode === true
   ){
-
     return [
       "NO DIRECT MATCH",
       "gray"
@@ -1358,9 +1347,7 @@ function getStatus(item){
 }
 
 
-/* ========================================
-   RENDER SCANNER PRODUCTS
-======================================== */
+/* SCANNER RENDER */
 
 function renderScanner(items){
 
@@ -1400,7 +1387,6 @@ function renderScanner(items){
       items.length
     );
 
-
   if(!items.length){
 
     root.innerHTML = `
@@ -1409,18 +1395,16 @@ function renderScanner(items){
         <div class="radar"></div>
 
         <strong>
-          No scanner results yet
+          Waiting for scanner
         </strong>
 
         Backend connected.
-        Waiting for next inventory scan.
 
       </div>
     `;
 
     return;
   }
-
 
   root.innerHTML =
     items.map(
@@ -1435,28 +1419,13 @@ function renderScanner(items){
         const url =
           getOpenUrl(item);
 
-        const hasExactUrl =
+        const exact =
           Boolean(
             item.url ||
             item.walmartItemId
           );
 
-        const cardClass =
-
-          item.inStock === true &&
-          item.directSeller === true
-
-            ? "stockCard"
-
-            : item.marketplaceOnly === true
-
-              ? "marketCard"
-
-              : "";
-
-
         const image =
-
           item.image
 
             ? `
@@ -1474,40 +1443,17 @@ function renderScanner(items){
               </div>
             `;
 
-
-        const warning =
-
-          item.marketplaceOnly === true
-
-            ? `
-              <div class="warning">
-                Marketplace seller detected.
-                This will not trigger a
-                Walmart-direct alert.
-              </div>
-            `
-
-            : "";
-
-
-        const buttonText =
-          hasExactUrl
-
-            ? "⚡ OPEN WALMART"
-
-            : "🔎 SEARCH WALMART";
-
-
         return `
           <article
-            class="card ${cardClass}"
+            class="card ${
+              item.inStock &&
+              item.directSeller
+                ? "stockCard"
+                : ""
+            }"
             data-open-url="${esc(url)}"
             tabindex="0"
             role="link"
-            aria-label="Open ${esc(
-              item.name ||
-              "Pokémon product"
-            )} on Walmart"
           >
 
             <div class="cardTop">
@@ -1519,55 +1465,36 @@ function renderScanner(items){
               <div class="info">
 
                 <div class="set">
-
                   ${esc(
                     item.set ||
                     "POKÉMON TCG"
                   )}
-
                 </div>
 
                 <div class="name">
-
                   ${esc(
                     item.name ||
                     "Pokémon Product"
                   )}
-
                 </div>
 
                 <div class="price">
-
                   ${money(
                     item.price
                   )}
-
                 </div>
 
                 <div
                   class="badge ${badge}"
                 >
-
                   ${label}
-
                 </div>
 
               </div>
 
             </div>
 
-
             <div class="meta">
-
-              RETAILER:
-              ${esc(
-                (
-                  item.retailer ||
-                  "walmart"
-                ).toUpperCase()
-              )}
-
-              <br>
 
               SELLER:
               ${esc(
@@ -1593,24 +1520,23 @@ function renderScanner(items){
 
             </div>
 
-
-            ${warning}
-
-
             <a
               class="buy ${
-                hasExactUrl
+                exact
                   ? ""
                   : "searchBuy"
               }"
               href="${esc(url)}"
             >
-              ${buttonText}
+              ${
+                exact
+                  ? "⚡ OPEN WALMART"
+                  : "🔎 SEARCH WALMART"
+              }
             </a>
 
-
             <div class="tapHint">
-              TAP CARD TO OPEN WALMART
+              TAP CARD TO OPEN
             </div>
 
           </article>
@@ -1619,14 +1545,11 @@ function renderScanner(items){
       }
     ).join("");
 
-
   bindCardClicks();
 }
 
 
-/* ========================================
-   MARKETPLACE RENDERING
-======================================== */
+/* MARKETPLACE RENDER */
 
 function renderMarketplace(
   items
@@ -1637,22 +1560,12 @@ function renderMarketplace(
       "marketplaceProducts"
     );
 
-  const cleanItems =
+  const clean =
     items
       .filter(
-        item => {
-
-          const price =
-            Number(
-              item.price
-            );
-
-          return (
-            item.offerAvailable === true &&
-            Number.isFinite(price) &&
-            price > 0
-          );
-        }
+        item =>
+          item.offerAvailable === true &&
+          Number(item.price) > 0
       )
       .sort(
         (a,b) =>
@@ -1660,16 +1573,12 @@ function renderMarketplace(
           Number(b.price)
       );
 
-
   document.getElementById(
     "marketCount"
   ).textContent =
-    cleanItems.length;
+    clean.length;
 
-
-  if(
-    !cleanItems.length
-  ){
+  if(!clean.length){
 
     root.innerHTML = `
       <div class="empty">
@@ -1677,11 +1586,10 @@ function renderMarketplace(
         <div class="radar"></div>
 
         <strong>
-          No Marketplace offers found
+          No Marketplace offers
         </strong>
 
-        No matching available offers
-        were returned.
+        Nothing matching right now.
 
       </div>
     `;
@@ -1689,16 +1597,14 @@ function renderMarketplace(
     return;
   }
 
-
   root.innerHTML =
-    cleanItems.map(
+    clean.map(
       item => {
 
         const url =
           getOpenUrl(item);
 
         const image =
-
           item.image
 
             ? `
@@ -1716,17 +1622,12 @@ function renderMarketplace(
               </div>
             `;
 
-
         return `
           <article
             class="card marketCard"
             data-open-url="${esc(url)}"
             tabindex="0"
             role="link"
-            aria-label="Open ${esc(
-              item.name ||
-              "Marketplace product"
-            )} on Walmart"
           >
 
             <div class="cardTop">
@@ -1738,29 +1639,22 @@ function renderMarketplace(
               <div class="info">
 
                 <div class="set">
-
                   ${esc(
                     item.set ||
                     "POKÉMON TCG"
                   )}
-
                 </div>
 
                 <div class="name">
-
                   ${esc(
-                    item.name ||
-                    "Pokémon Product"
+                    item.name
                   )}
-
                 </div>
 
                 <div class="price">
-
                   ${money(
                     item.price
                   )}
-
                 </div>
 
                 <div
@@ -1773,50 +1667,19 @@ function renderMarketplace(
 
             </div>
 
-
             <div class="meta">
-
               SELLER:
               ${esc(
                 item.seller ||
                 "Marketplace Seller"
               )}
-
-              <br>
-
-              WALMART ITEM:
-              ${esc(
-                item.walmartItemId ||
-                "Unknown"
-              )}
-
-              ${
-                item.checkedAt
-
-                  ? `
-                    <br>
-                    CHECKED:
-                    ${
-                      new Date(
-                        item.checkedAt
-                      ).toLocaleString()
-                    }
-                  `
-
-                  : ""
-              }
-
             </div>
-
 
             <div class="warning">
-
               Marketplace listing.
-              No Walmart-direct stock
-              notification will fire.
-
+              No direct-stock alert
+              will fire.
             </div>
-
 
             <a
               class="buy marketBuy"
@@ -1825,25 +1688,17 @@ function renderMarketplace(
               🛒 OPEN WALMART
             </a>
 
-
-            <div class="tapHint">
-              TAP CARD TO OPEN LISTING
-            </div>
-
           </article>
         `;
 
       }
     ).join("");
 
-
   bindCardClicks();
 }
 
 
-/* ========================================
-   BACKEND SCANNER
-======================================== */
+/* SCANNER LOAD */
 
 async function loadScanner(){
 
@@ -1862,7 +1717,6 @@ async function loadScanner(){
         }
       );
 
-
     if(!response.ok){
 
       throw new Error(
@@ -1870,10 +1724,8 @@ async function loadScanner(){
       );
     }
 
-
     const data =
       await response.json();
-
 
     const items =
       Array.isArray(
@@ -1882,21 +1734,17 @@ async function loadScanner(){
         ? data.items
         : [];
 
-
     connection.innerHTML = `
       <span class="dot"></span>
       LIVE MONITOR CONNECTED
     `;
 
-
     connection.style.color =
       "var(--green)";
-
 
     renderScanner(
       items
     );
-
 
     document.getElementById(
       "lastScan"
@@ -1910,7 +1758,11 @@ async function loadScanner(){
             ).toLocaleTimeString()
           }`
 
-        : "Connected • waiting for scan";
+        : "Waiting for scan";
+
+    nextScannerRefresh =
+      Date.now() +
+      SCANNER_REFRESH_MS;
 
   }
 
@@ -1921,67 +1773,32 @@ async function loadScanner(){
       BACKEND OFFLINE
     `;
 
-
     connection.style.color =
       "var(--red)";
-
-
-    document.getElementById(
-      "products"
-    ).innerHTML = `
-      <div class="empty">
-
-        <div class="radar"></div>
-
-        <strong>
-          Scanner connection failed
-        </strong>
-
-        ${esc(
-          error.message
-        )}
-
-      </div>
-    `;
   }
 }
 
 
-/* ========================================
-   MARKETPLACE SEARCH
-======================================== */
+/* MARKETPLACE LOAD */
 
 async function loadMarketplace(
   force = false
 ){
 
-  if(
-    marketplaceLoading
-  ){
+  if(marketplaceLoading){
     return;
   }
-
-
-  const now =
-    Date.now();
-
 
   if(
     !force &&
-    lastMarketplaceLoad &&
-    (
-      now -
-      lastMarketplaceLoad
-    ) <
-    MARKETPLACE_REFRESH_MS
+    Date.now() <
+      nextMarketplaceRefresh
   ){
     return;
   }
 
-
   marketplaceLoading =
     true;
-
 
   marketRefreshButton
     .classList
@@ -1989,17 +1806,14 @@ async function loadMarketplace(
       "loading"
     );
 
-
   marketRefreshButton
     .textContent =
       "↻ SEARCHING...";
-
 
   document.getElementById(
     "marketLastScan"
   ).textContent =
     "Searching Walmart...";
-
 
   try{
 
@@ -2011,7 +1825,6 @@ async function loadMarketplace(
         }
       );
 
-
     if(!response.ok){
 
       throw new Error(
@@ -2019,27 +1832,16 @@ async function loadMarketplace(
       );
     }
 
-
     const data =
       await response.json();
 
-
-    const items =
+    renderMarketplace(
       Array.isArray(
         data.items
       )
         ? data.items
-        : [];
-
-
-    renderMarketplace(
-      items
+        : []
     );
-
-
-    lastMarketplaceLoad =
-      Date.now();
-
 
     document.getElementById(
       "marketLastScan"
@@ -2051,28 +1853,13 @@ async function loadMarketplace(
         ).toLocaleTimeString()
       }`;
 
+    nextMarketplaceRefresh =
+      Date.now() +
+      MARKETPLACE_REFRESH_MS;
+
   }
 
   catch(error){
-
-    document.getElementById(
-      "marketplaceProducts"
-    ).innerHTML = `
-      <div class="empty">
-
-        <div class="radar"></div>
-
-        <strong>
-          Marketplace search failed
-        </strong>
-
-        ${esc(
-          error.message
-        )}
-
-      </div>
-    `;
-
 
     document.getElementById(
       "marketLastScan"
@@ -2086,13 +1873,11 @@ async function loadMarketplace(
     marketplaceLoading =
       false;
 
-
     marketRefreshButton
       .classList
       .remove(
         "loading"
       );
-
 
     marketRefreshButton
       .textContent =
@@ -2100,6 +1885,235 @@ async function loadMarketplace(
   }
 }
 
+
+/* MANUAL REFRESH */
+
+async function refreshEverything(){
+
+  if(manualRefreshRunning){
+    return;
+  }
+
+  manualRefreshRunning =
+    true;
+
+  pullRefresh
+    .classList
+    .add(
+      "visible",
+      "refreshing"
+    );
+
+  pullText.textContent =
+    "REFRESHING...";
+
+  pullRefresh.style.transform =
+    "translate(-50%,0px)";
+
+  try{
+
+    await Promise.allSettled([
+      loadScanner(),
+      loadMarketplace(true)
+    ]);
+
+    nextScannerRefresh =
+      Date.now() +
+      SCANNER_REFRESH_MS;
+
+    nextMarketplaceRefresh =
+      Date.now() +
+      MARKETPLACE_REFRESH_MS;
+
+  }
+
+  finally{
+
+    setTimeout(
+      () => {
+
+        pullRefresh
+          .classList
+          .remove(
+            "visible",
+            "ready",
+            "refreshing"
+          );
+
+        pullRefresh.style.transform =
+          "translate(-50%,-90px)";
+
+        pullText.textContent =
+          "PULL TO REFRESH";
+
+        manualRefreshRunning =
+          false;
+
+      },
+      450
+    );
+  }
+}
+
+
+/* PULL TO REFRESH */
+
+let touchStartY =
+  0;
+
+let pullDistance =
+  0;
+
+let pulling =
+  false;
+
+const PULL_TRIGGER =
+  95;
+
+document.addEventListener(
+  "touchstart",
+  event => {
+
+    if(
+      window.scrollY <= 0 &&
+      event.touches.length === 1
+    ){
+
+      touchStartY =
+        event.touches[0]
+          .clientY;
+
+      pullDistance =
+        0;
+
+      pulling =
+        true;
+    }
+
+  },
+  {
+    passive:true
+  }
+);
+
+document.addEventListener(
+  "touchmove",
+  event => {
+
+    if(
+      !pulling ||
+      manualRefreshRunning
+    ){
+      return;
+    }
+
+    const currentY =
+      event.touches[0]
+        .clientY;
+
+    const distance =
+      currentY -
+      touchStartY;
+
+    if(distance <= 0){
+      return;
+    }
+
+    pullDistance =
+      Math.min(
+        distance,
+        150
+      );
+
+    const displayed =
+      Math.min(
+        70,
+        pullDistance * .55
+      );
+
+    pullRefresh
+      .classList
+      .add(
+        "visible"
+      );
+
+    pullRefresh.style.transform =
+      `translate(-50%,${displayed}px)`;
+
+    if(
+      pullDistance >=
+      PULL_TRIGGER
+    ){
+
+      pullRefresh
+        .classList
+        .add(
+          "ready"
+        );
+
+      pullText.textContent =
+        "RELEASE TO REFRESH";
+
+    }
+
+    else{
+
+      pullRefresh
+        .classList
+        .remove(
+          "ready"
+        );
+
+      pullText.textContent =
+        "PULL TO REFRESH";
+    }
+
+  },
+  {
+    passive:true
+  }
+);
+
+document.addEventListener(
+  "touchend",
+  () => {
+
+    if(!pulling){
+      return;
+    }
+
+    pulling =
+      false;
+
+    if(
+      pullDistance >=
+      PULL_TRIGGER
+    ){
+
+      refreshEverything();
+
+    }
+
+    else{
+
+      pullRefresh
+        .classList
+        .remove(
+          "visible",
+          "ready"
+        );
+
+      pullRefresh.style.transform =
+        "translate(-50%,-90px)";
+    }
+
+    pullDistance =
+      0;
+  }
+);
+
+
+/* MARKETPLACE BUTTON */
 
 marketRefreshButton
   .addEventListener(
@@ -2114,9 +2128,7 @@ marketRefreshButton
   );
 
 
-/* ========================================
-   ALERT BUTTON UI
-======================================== */
+/* PUSH */
 
 function setAlertButton(
   text,
@@ -2126,12 +2138,10 @@ function setAlertButton(
   alertButton.textContent =
     text;
 
-
   alertButton.classList.remove(
     "enabled",
     "blocked"
   );
-
 
   if(state){
 
@@ -2142,24 +2152,67 @@ function setAlertButton(
 }
 
 
-/* ========================================
-   SERVICE WORKER
-======================================== */
+function urlBase64ToUint8Array(
+  base64String
+){
 
-async function getServiceWorker(){
+  const padding =
+    "=".repeat(
+      (
+        4 -
+        base64String.length % 4
+      ) % 4
+    );
 
-  if(
-    !(
-      "serviceWorker"
-      in navigator
+  const base64 =
+    (
+      base64String +
+      padding
     )
-  ){
+      .replace(/-/g,"+")
+      .replace(/_/g,"/");
+
+  const rawData =
+    window.atob(
+      base64
+    );
+
+  return Uint8Array.from(
+    [...rawData].map(
+      char =>
+        char.charCodeAt(0)
+    )
+  );
+}
+
+
+async function getCurrentVapidPublicKey(){
+
+  const response =
+    await fetch(
+      `${API}/api/push/public-key`,
+      {
+        cache:"no-store"
+      }
+    );
+
+  if(!response.ok){
 
     throw new Error(
-      "Service workers are not supported."
+      "Could not retrieve push key."
     );
   }
 
+  const data =
+    await response.json();
+
+  return data
+    .publicKey
+    .trim();
+}
+
+
+async function getServiceWorker(){
 
   await navigator
     .serviceWorker
@@ -2171,170 +2224,32 @@ async function getServiceWorker(){
       }
     );
 
-
-  const registration =
-    await navigator
-      .serviceWorker
-      .ready;
-
-
-  try{
-
-    await registration
-      .update();
-
-  }
-
-  catch(error){
-
-    console.log(
-      "Service worker update check skipped:",
-      error
-    );
-  }
-
-
-  return registration;
+  return navigator
+    .serviceWorker
+    .ready;
 }
 
-
-/* ========================================
-   PUSH BACKEND SYNC
-======================================== */
 
 async function saveSubscriptionToBackend(
   subscription
 ){
 
-  if(
-    !subscription ||
-    !subscription.endpoint
-  ){
+  await fetch(
+    `${API}/api/push/subscribe`,
+    {
+      method:"POST",
 
-    throw new Error(
-      "Invalid push subscription."
-    );
-  }
+      headers:{
+        "Content-Type":
+          "application/json"
+      },
 
-
-  const saveResponse =
-    await fetch(
-      `${API}/api/push/subscribe`,
-      {
-        method:"POST",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify(
-            subscription
-          )
-      }
-    );
-
-
-  if(!saveResponse.ok){
-
-    const message =
-      await saveResponse
-        .text();
-
-
-    throw new Error(
-      `Backend rejected subscription: ${message}`
-    );
-  }
-
-
-  return saveResponse
-    .json();
-}
-
-
-async function removeSubscriptionFromBackend(
-  subscription
-){
-
-  if(
-    !subscription ||
-    !subscription.endpoint
-  ){
-    return;
-  }
-
-
-  try{
-
-    await fetch(
-      `${API}/api/push/unsubscribe`,
-      {
-        method:"POST",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-            endpoint:
-              subscription.endpoint
-          })
-      }
-    );
-
-  }
-
-  catch(error){
-
-    console.log(
-      "Backend unsubscribe cleanup skipped:",
-      error
-    );
-  }
-}
-
-
-/* ========================================
-   VAPID SUBSCRIPTION CHECK
-======================================== */
-
-function getSubscriptionPublicKey(
-  subscription
-){
-
-  try{
-
-    const key =
-      subscription
-        ?.options
-        ?.applicationServerKey;
-
-
-    if(!key){
-      return null;
+      body:
+        JSON.stringify(
+          subscription
+        )
     }
-
-
-    return arrayBufferToBase64Url(
-      key
-    );
-
-  }
-
-  catch(error){
-
-    console.log(
-      "Could not inspect existing subscription key:",
-      error
-    );
-
-
-    return null;
-  }
+  );
 }
 
 
@@ -2343,71 +2258,13 @@ async function getOrCreateSubscription(){
   const registration =
     await getServiceWorker();
 
-
-  const currentPublicKey =
+  const currentKey =
     await getCurrentVapidPublicKey();
-
 
   let subscription =
     await registration
       .pushManager
       .getSubscription();
-
-
-  const storedPublicKey =
-    localStorage.getItem(
-      VAPID_STORAGE_KEY
-    );
-
-
-  if(subscription){
-
-    const subscriptionPublicKey =
-      getSubscriptionPublicKey(
-        subscription
-      );
-
-
-    if(
-      subscriptionPublicKey &&
-      subscriptionPublicKey !==
-        currentPublicKey
-    ){
-
-      await removeSubscriptionFromBackend(
-        subscription
-      );
-
-
-      await subscription
-        .unsubscribe();
-
-
-      subscription =
-        null;
-    }
-
-
-    else if(
-      !subscriptionPublicKey &&
-      storedPublicKey !==
-        currentPublicKey
-    ){
-
-      await removeSubscriptionFromBackend(
-        subscription
-      );
-
-
-      await subscription
-        .unsubscribe();
-
-
-      subscription =
-        null;
-    }
-  }
-
 
   if(!subscription){
 
@@ -2420,65 +2277,22 @@ async function getOrCreateSubscription(){
 
           applicationServerKey:
             urlBase64ToUint8Array(
-              currentPublicKey
+              currentKey
             )
 
         });
   }
 
-
-  localStorage.setItem(
-    VAPID_STORAGE_KEY,
-    currentPublicKey
-  );
-
-
   return subscription;
 }
 
 
-/* ========================================
-   ENABLE PUSH
-======================================== */
-
 async function enableAlerts(){
-
-  setAlertButton(
-    "🔔 CONNECTING PUSH..."
-  );
-
 
   try{
 
-    if(
-      !(
-        "Notification"
-        in window
-      )
-    ){
-
-      throw new Error(
-        "Notifications are unavailable. Open the installed Home Screen app."
-      );
-    }
-
-
-    if(
-      !(
-        "PushManager"
-        in window
-      )
-    ){
-
-      throw new Error(
-        "Web Push is unavailable. Open Pokémon Restock Monitor from your iPhone Home Screen."
-      );
-    }
-
-
     let permission =
       Notification.permission;
-
 
     if(
       permission ===
@@ -2490,10 +2304,9 @@ async function enableAlerts(){
           .requestPermission();
     }
 
-
     if(
-      permission ===
-      "denied"
+      permission !==
+      "granted"
     ){
 
       setAlertButton(
@@ -2501,38 +2314,15 @@ async function enableAlerts(){
         "blocked"
       );
 
-
-      alert(
-        "Notifications are blocked. Enable notifications for Pokémon Restock Monitor in your iPhone settings."
-      );
-
-
       return;
     }
-
-
-    if(
-      permission !==
-      "granted"
-    ){
-
-      setAlertButton(
-        "🔔 ENABLE iPHONE ALERTS"
-      );
-
-
-      return;
-    }
-
 
     const subscription =
       await getOrCreateSubscription();
 
-
     await saveSubscriptionToBackend(
       subscription
     );
-
 
     setAlertButton(
       "✅ PUSH ALERTS ACTIVE",
@@ -2543,20 +2333,11 @@ async function enableAlerts(){
 
   catch(error){
 
-    console.error(
-      "Push setup failed:",
-      error
-    );
-
+    console.error(error);
 
     setAlertButton(
       "⚠️ PUSH SETUP FAILED",
       "blocked"
-    );
-
-
-    alert(
-      `Push setup failed: ${error.message}`
     );
   }
 }
@@ -2569,10 +2350,6 @@ alertButton
   );
 
 
-/* ========================================
-   RESTORE PUSH
-======================================== */
-
 async function restorePushRegistration(){
 
   try{
@@ -2582,59 +2359,18 @@ async function restorePushRegistration(){
         "Notification"
         in window
       ) ||
-      !(
-        "serviceWorker"
-        in navigator
-      ) ||
-      !(
-        "PushManager"
-        in window
-      )
-    ){
-      return;
-    }
-
-
-    if(
-      Notification.permission ===
-      "denied"
-    ){
-
-      setAlertButton(
-        "⚠️ ALERTS BLOCKED",
-        "blocked"
-      );
-
-      return;
-    }
-
-
-    if(
       Notification.permission !==
-      "granted"
+        "granted"
     ){
-
-      setAlertButton(
-        "🔔 ENABLE iPHONE ALERTS"
-      );
-
       return;
     }
-
-
-    setAlertButton(
-      "🔔 VERIFYING ALERTS..."
-    );
-
 
     const subscription =
       await getOrCreateSubscription();
 
-
     await saveSubscriptionToBackend(
       subscription
     );
-
 
     setAlertButton(
       "✅ PUSH ALERTS ACTIVE",
@@ -2645,36 +2381,21 @@ async function restorePushRegistration(){
 
   catch(error){
 
-    console.error(
-      "Push restore failed:",
-      error
-    );
-
-
-    setAlertButton(
-      "⚠️ PUSH SYNC FAILED",
-      "blocked"
-    );
+    console.error(error);
   }
 }
 
 
-/* ========================================
-   START APP
-======================================== */
+/* START */
 
 loadScanner();
-
-loadMarketplace();
-
+loadMarketplace(true);
 restorePushRegistration();
-
 
 setInterval(
   loadScanner,
-  DASHBOARD_REFRESH_MS
+  SCANNER_REFRESH_MS
 );
-
 
 setInterval(
   () => {
@@ -2682,9 +2403,8 @@ setInterval(
     loadMarketplace();
 
   },
-  MARKETPLACE_REFRESH_MS
+  30000
 );
-
 
 document.addEventListener(
   "visibilitychange",
@@ -2699,15 +2419,12 @@ document.addEventListener(
 
       restorePushRegistration();
 
-
       if(
-        Date.now() -
-        lastMarketplaceLoad >
-        MARKETPLACE_REFRESH_MS
+        Date.now() >=
+        nextMarketplaceRefresh
       ){
 
         loadMarketplace();
-
       }
     }
   }
