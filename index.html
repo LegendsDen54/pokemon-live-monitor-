@@ -1003,59 +1003,14 @@ body{
 
 </section>
 
-<section
-  class="monitor spotifyMonitor"
->
-
-<div class="monitorHead">
-
-  <div>
-    <div
-      class="smallTitle spotifyTitle"
-    >
-      🎵 SPOTIFY
-    </div>
-
-    <h2>
-      Monitor Playlist
-    </h2>
-  </div>
-
-  <div class="lastScan">
-    TAP PLAY
-  </div>
-
-</div>
-
-<div class="scanLine"></div>
-
-<div class="spotifyWrap">
-
-  <iframe
-    class="spotifyFrame"
-    src="https://open.spotify.com/embed/playlist/18MiIrblH98dgBR6bWGwax?utm_source=generator&theme=0"
-    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-    loading="lazy"
-    title="Spotify Playlist"
-  ></iframe>
-
-  <a
-    class="spotifyOpen"
-    href="https://open.spotify.com/playlist/18MiIrblH98dgBR6bWGwax"
-  >
-    🎵 OPEN PLAYLIST IN SPOTIFY
-  </a>
-
-</div>
-
-</section>
+<section class="monitor" id="discordReports"><div class="monitorHead"><div><div class="smallTitle">DISCORD SOURCE INTELLIGENCE</div><h2>Community Pokémon Reports</h2></div><div class="lastScan" id="discordUpdated">Loading reports…</div></div><div class="scanLine"></div><p style="color:var(--muted);font-size:13px">Community reports are not confirmed retailer inventory. Check source links before acting.</p><div id="discordTabs" style="display:flex;flex-wrap:wrap;gap:8px;margin:14px 0"></div><div id="discordCards" style="display:grid;gap:12px" aria-live="polite">Loading source reports…</div></section>
 
 <div class="footer">
   POKÉMON RESTOCKS •
   WALMART DIRECT •
   MARKETPLACE •
   LIVE ALERTS •
-  SPOTIFY
+  SOURCE REPORTS
 </div>
 
 </div>
@@ -2430,6 +2385,35 @@ document.addEventListener(
   }
 );
 
+
+/* Discord source reports; leaves existing Walmart and push logic unchanged. */
+const reportRetailers={all:'ALL',walmart:'WALMART',target:'TARGET',pokemoncenter:'POKÉMON CENTER',sams:"SAM'S CLUB",bestbuy:'BEST BUY',costco:'COSTCO'};
+let reportFilter='all',reportRows=[],reportBusy=false;
+const reportTabs=document.getElementById('discordTabs'),reportCards=document.getElementById('discordCards');
+for(const [id,name] of Object.entries(reportRetailers)){const b=document.createElement('button');b.type='button';b.textContent=name;b.dataset.retailer=id;b.style.cssText='padding:9px 12px;border:1px solid #3579a2;border-radius:8px;background:#0b2139;color:#fff';b.onclick=()=>{reportFilter=id;paintDiscordReports()};reportTabs.appendChild(b);}
+function paintDiscordReports(){
+  for(const b of reportTabs.children)b.style.borderColor=b.dataset.retailer===reportFilter?'#54f3a6':'#3579a2';
+  reportCards.replaceChildren();
+  const selected=reportRows.filter(x=>reportFilter==='all'||x.retailer===reportFilter).slice(0,40);
+  if(!selected.length){reportCards.textContent='No source reports today for this retailer. This is not an inventory status.';return;}
+  for(const item of selected){
+    const card=document.createElement('article');card.style.cssText='padding:14px;background:#071a30;border:1px solid #27516d;border-radius:10px';
+    const title=document.createElement('strong');title.textContent=(reportRetailers[item.retailer]||item.retailer||'SOURCE')+' · '+(item.source||'Discord');card.appendChild(title);
+    const when=document.createElement('div');when.style.cssText='color:#9eb5c8;font-size:12px;margin-top:6px';const d=new Date(item.updatedAt||item.publishedAt);when.textContent=Number.isNaN(d.getTime())?'Time unavailable':d.toLocaleString();card.appendChild(when);
+    const body=document.createElement('p');body.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px';body.textContent=String(item.summary||'Source report').slice(0,900);card.appendChild(body);
+    try{const u=new URL(item.sourceUrl);if(u.protocol==='https:'&&u.hostname==='discord.com'){const link=document.createElement('a');link.href=u.href;link.target='_blank';link.rel='noopener noreferrer';link.textContent='VIEW DISCORD SOURCE ↗';link.style.color='#62c7ff';card.appendChild(link);}}catch{}
+    reportCards.appendChild(card);
+  }
+}
+async function loadDiscordReports(){
+  if(reportBusy)return;reportBusy=true;
+  try{const r=await fetch(API+'/api/ccn/news?game=pokemon',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();if(!d.ok||!Array.isArray(d.posts))throw Error('Invalid response');reportRows=d.posts.sort((a,b)=>Date.parse(b.updatedAt||b.publishedAt)-Date.parse(a.updatedAt||a.publishedAt));document.getElementById('discordUpdated').textContent='Checked '+new Date().toLocaleTimeString();paintDiscordReports();}
+  catch(e){document.getElementById('discordUpdated').textContent='Source feed unavailable';if(!reportRows.length)reportCards.textContent='Source feed unavailable. Walmart scanner remains separate.';}
+  finally{reportBusy=false;}
+}
+loadDiscordReports();setInterval(loadDiscordReports,60000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadDiscordReports();});
+if(typeof EventSource!=='undefined'){const stream=new EventSource(API+'/api/ccn/events');stream.addEventListener('report',loadDiscordReports);}
 </script>
 
 </body>
