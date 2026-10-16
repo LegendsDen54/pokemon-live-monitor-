@@ -1003,7 +1003,7 @@ body{
 
 </section>
 
-<section class="monitor" id="discordReports"><div class="monitorHead"><div><div class="smallTitle">DISCORD SOURCE INTELLIGENCE</div><h2>Community Pokémon Reports</h2></div><div class="lastScan" id="discordUpdated">Loading reports…</div></div><div class="scanLine"></div><p style="color:var(--muted);font-size:13px">Community reports are not confirmed retailer inventory. Check source links before acting.</p><div id="discordTabs" style="display:flex;flex-wrap:wrap;gap:8px;margin:14px 0"></div><div id="discordCards" style="display:grid;gap:12px" aria-live="polite">Loading source reports…</div></section>
+<section class="monitor" id="discordReports"><div class="monitorHead"><div><div class="smallTitle">DISCORD SOURCE INTELLIGENCE</div><h2>Community Pokémon Reports</h2></div><div class="lastScan" id="discordUpdated">Loading reports…</div></div><div class="scanLine"></div><p style="color:var(--muted);font-size:13px">Community reports are not confirmed retailer inventory. Check source links before acting.</p><p id="discordConnection" style="color:var(--muted);font-size:13px" aria-live="polite">Checking Discord connection…</p><div id="discordTabs" style="display:flex;flex-wrap:wrap;gap:8px;margin:14px 0"></div><div id="discordCards" style="display:grid;gap:12px" aria-live="polite">Loading source reports…</div></section>
 
 <div class="footer">
   POKÉMON RESTOCKS •
@@ -1869,7 +1869,8 @@ async function refreshEverything(){
 
     await Promise.allSettled([
       loadScanner(),
-      loadMarketplace(true)
+      loadMarketplace(true),
+      loadDiscordReports()
     ]);
 
     nextScannerRefresh =
@@ -2189,7 +2190,7 @@ async function saveSubscriptionToBackend(
   subscription
 ){
 
-  await fetch(
+  const response = await fetch(
     `${API}/api/push/subscribe`,
     {
       method:"POST",
@@ -2205,6 +2206,7 @@ async function saveSubscriptionToBackend(
         )
     }
   );
+  if(!response.ok) throw new Error("Push subscription was not saved.");
 }
 
 
@@ -2411,6 +2413,18 @@ async function loadDiscordReports(){
   catch(e){document.getElementById('discordUpdated').textContent='Source feed unavailable';if(!reportRows.length)reportCards.textContent='Source feed unavailable. Walmart scanner remains separate.';}
   finally{reportBusy=false;}
 }
+async function loadDiscordConnection(){
+  const label=document.getElementById('discordConnection');
+  try{
+    const response=await fetch(API+'/api/ccn/connection',{cache:'no-store'});
+    if(!response.ok)throw Error('HTTP '+response.status);
+    const data=await response.json();
+    if(!data.ok)throw Error('Invalid connection response');
+    const failed=(data.channelHealth||[]).filter(c=>c.status==='inaccessible').length;
+    label.textContent=!data.configured?'Live Discord ingestion is not configured. Showing saved reports.':!data.connected?'Discord bot disconnected. Showing saved reports.':failed?'Discord bot connected, but '+failed+' watched channels are inaccessible. Server access is required for new reports.':'Discord bot connected · Last report: '+(data.lastPublishedAt?new Date(data.lastPublishedAt).toLocaleString():'waiting for a matching report');
+  }catch{label.textContent='Discord connection status unavailable. Showing saved reports.';}
+}
+loadDiscordConnection();setInterval(loadDiscordConnection,60000);
 loadDiscordReports();setInterval(loadDiscordReports,60000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')loadDiscordReports();});
 if(typeof EventSource!=='undefined'){const stream=new EventSource(API+'/api/ccn/events');stream.addEventListener('report',loadDiscordReports);}
